@@ -15,4 +15,5 @@ class User(Base):
     first_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     last_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    # Keep this expression compact; Ruff 0.17 formats it as a single line.
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
