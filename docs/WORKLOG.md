@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-29 — Configuration boundary refactor
+
+- **Goal:** simplify database URL loading without weakening the application's required `BOT_TOKEN` validation.
+- **Changed:** introduced `DatabaseSettings` for database URL configuration and validation; `Settings` extends it and still requires `bot_token`. `get_database_url()` no longer constructs application settings with a synthetic empty secret. Existing environment-over-`.env` precedence is retained.
+- **Tests:** updated configuration characterization tests to explicitly remove `BOT_TOKEN` while testing Alembic's database URL loading.
+- **Architecture:** no handler, service, repository, transaction, XP, migration, or schema behavior changed.
+- **Verification:** source and test files were read back from the feature branch. Local execution is unavailable through the connected GitHub file tools; full CI verification is pending.
+- **Branch:** `refactor/config-settings-boundary`, based on `main` at `fe25dba738f8201646772f6f8409c9d77c088705`.
+- **Next:** open a PR to run the repository CI, then update this log and the plan with actual check results.
+
 ## 2026-10-29 — Startup/import-safety regression tests
 
 - **Goal:** cover issue #14's import safety, dispatcher wiring, and startup failure cleanup contracts.
@@ -84,3 +94,4 @@ Append a short entry after every meaningful task or PR. Newest entries go first.
 - **Merged:** PR #8 into `main`.
 - **Verification:** main CI was reported green after merge.
 - **Next:** continue reliability review with evidence-based, bounded changes.
+
