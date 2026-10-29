@@ -22,8 +22,7 @@ def upgrade() -> None:
 
     indexes = {index["name"]: index for index in inspector.get_indexes("chats")}
     unique_constraints = {
-        constraint["name"]: constraint
-        for constraint in inspector.get_unique_constraints("chats")
+        constraint["name"]: constraint for constraint in inspector.get_unique_constraints("chats")
     }
 
     constraint_name = "uq_chats_telegram_id"
