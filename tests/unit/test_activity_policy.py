@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from bot.services.activity import ActivityPolicy
+from bot.services.activity import ActivityPolicy, level_for_xp
 
 
 def test_first_message_awards_base_xp() -> None:
@@ -27,3 +27,11 @@ def test_message_after_cooldown_awards_base_xp() -> None:
     result = policy.award_xp(last_awarded_at=now - timedelta(seconds=60), now=now)
 
     assert result == 10
+
+
+def test_level_progression_uses_quadratic_thresholds() -> None:
+    assert level_for_xp(0) == 1
+    assert level_for_xp(99) == 1
+    assert level_for_xp(100) == 2
+    assert level_for_xp(399) == 2
+    assert level_for_xp(400) == 3
