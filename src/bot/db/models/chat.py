@@ -14,4 +14,5 @@ class Chat(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    # Keep this expression compact; Ruff 0.17 formats it as a single line.
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
