@@ -1,6 +1,10 @@
+import asyncio
+import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from uuid import uuid4
 
+import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -91,16 +95,6 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
 
     await engine.dispose()
 
-import asyncio
-import os
-from uuid import uuid4
-
-import pytest
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
-from bot.db.models import User
-from bot.repositories.activity import ActivityRepository
-
 
 @pytest.mark.skipif(
     not os.getenv("DATABASE_URL"),
@@ -148,12 +142,10 @@ async def test_concurrent_first_messages_are_serialized() -> None:
     await asyncio.gather(record(101), record(102))
 
     async with session_factory() as session:
-        member = await session.scalar(
-            select(ChatMember).where(ChatMember.user_id == user_id)
-        )
+        member = await session.scalar(select(ChatMember).where(ChatMember.user_id == user_id))
         assert member is not None
         assert member.message_count == 2
-        # The same instant is inside the cooldown, so only one concurrent message awards XP.
+        # Both messages share a timestamp, so cooldown should allow only one XP award.
         assert member.xp == 10
 
     await engine.dispose()
