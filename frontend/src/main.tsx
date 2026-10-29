@@ -4,6 +4,9 @@ import { App } from './App';
 import { initializeTelegram } from './lib/telegram';
 import './styles.css';
 
-initializeTelegram();
+async function bootstrap(): Promise<void> {
+  await initializeTelegram();
+  ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+}
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+void bootstrap();
