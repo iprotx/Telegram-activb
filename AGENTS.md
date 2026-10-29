@@ -178,3 +178,15 @@ Before declaring work complete:
 - Use concise conventional-style messages: `feat:`, `fix:`, `test:`, `refactor:`, `docs:`, `chore:`.
 - Each meaningful commit should make it clear why the change exists and how it was verified.
 - Do not rewrite or discard unrelated user work.
+
+
+## Project planning and progress reporting
+
+- Before every substantial task, inspect `docs/PROJECT_STATUS.md`, the relevant implementation plan, current GitHub issues/PRs, and the actual branch/CI state.
+- Before editing, provide a short plan: goal, in-scope/out-of-scope work, dependencies/risks, acceptance criteria, and verification commands.
+- Work in bounded stages. At each stage boundary, report what changed, what was verified with evidence, what remains unverified, and the proposed next step. Do not silently proceed into a separate stage when a meaningful decision or approval is needed.
+- After each meaningful task, update `docs/PROJECT_STATUS.md` and append to `docs/WORKLOG.md`. Record durable architecture/product decisions in `docs/DECISIONS.md`.
+- Keep `docs/PROJECT_STATUS.md` concise and current; keep detailed execution steps in the relevant plan under `docs/superpowers/plans/`; use GitHub issues for actionable backlog items.
+- Never mark work complete solely because code was written. Completion requires evidence from relevant tests/CI/review, and any unavailable checks must be stated explicitly.
+- Progress reports must distinguish: **changed**, **verified**, **not verified**, **risks/blockers**, and **next step**.
+- Do not merge PRs, deploy, or perform destructive/release actions without explicit user approval.
