@@ -52,6 +52,11 @@ docker compose up --build -d
 
 ## Project rules
 
-See `AGENTS.MD` for contribution and architecture rules.
+See `AGENTS.md` for contribution and architecture rules.
 
-The reusable coding rules discussed for `python-aiogram-coder` are kept in `docs/skills/python-aiogram-coder.md`.
+Project-local engineering skills are kept under `skills/`:
+
+- `skills/ub-mode/SKILL.md` — disciplined TDD, architecture, review and debugging workflow.
+- `skills/python-aiogram-coder/SKILL.md` — aiogram-specific project conventions.
+
+The detailed production-hardening execution plan is in `docs/superpowers/plans/2026-10-29-production-hardening.md`.

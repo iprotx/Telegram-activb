@@ -4,7 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from bot.config import Settings
-from bot.db.session import create_session_factory
+from bot.db.session import Database, create_database
 from bot.middlewares import ErrorMiddleware, ServicesMiddleware
 from bot.routers import router
 
@@ -13,21 +13,22 @@ def create_bot(settings: Settings) -> Bot:
     return Bot(token=settings.bot_token_value)
 
 
-def create_dispatcher(settings: Settings) -> Dispatcher:
+def create_dispatcher(database: Database) -> Dispatcher:
     dispatcher = Dispatcher()
     dispatcher.update.outer_middleware(ErrorMiddleware())
-    dispatcher.update.outer_middleware(ServicesMiddleware(create_session_factory(settings)))
+    dispatcher.update.outer_middleware(ServicesMiddleware(database.session_factory))
     dispatcher.include_router(router)
     return dispatcher
 
 
 async def run(settings: Settings) -> None:
-    bot = create_bot(settings)
-    dispatcher = create_dispatcher(settings)
+    database = create_database(settings)
     try:
-        await dispatcher.start_polling(bot)
+        async with create_bot(settings) as bot:
+            dispatcher = create_dispatcher(database)
+            await dispatcher.start_polling(bot)
     finally:
-        await bot.session.close()
+        await database.dispose()
 
 
 def main() -> None:

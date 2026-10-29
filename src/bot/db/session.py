@@ -1,21 +1,25 @@
-from collections.abc import AsyncIterator
+from dataclasses import dataclass
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from bot.config import Settings
 
 
-def create_session_factory(settings: Settings) -> async_sessionmaker[AsyncSession]:
+@dataclass(frozen=True)
+class Database:
+    engine: AsyncEngine
+    session_factory: async_sessionmaker[AsyncSession]
+
+    async def dispose(self) -> None:
+        await self.engine.dispose()
+
+
+def create_database(settings: Settings) -> Database:
     engine = create_async_engine(settings.database_url, pool_pre_ping=True)
-    return async_sessionmaker(engine, expire_on_commit=False)
-
-
-async def session_scope(
-    session_factory: async_sessionmaker[AsyncSession],
-) -> AsyncIterator[AsyncSession]:
-    async with session_factory() as session:
-        try:
-            yield session
-        except Exception:
-            await session.rollback()
-            raise
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    return Database(engine=engine, session_factory=session_factory)
