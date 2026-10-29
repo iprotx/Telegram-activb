@@ -5,23 +5,20 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.models import ActivityEvent, Chat, ChatMember, User
-from bot.services.activity import ActivityPolicy, level_for_xp
 
 
 class ActivityRepository:
-    def __init__(self, session: AsyncSession, policy: ActivityPolicy | None = None) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         self._session = session
-        self._policy = policy or ActivityPolicy()
 
-    async def record_message(
+    async def prepare_message(
         self,
         *,
         chat_telegram_id: int,
         chat_title: str | None,
         user: User,
         message_id: int,
-        now: datetime,
-    ) -> ChatMember:
+    ) -> tuple[ChatMember, bool]:
         chat = await self._get_or_create_chat(chat_telegram_id, chat_title)
         member = await self._get_or_create_member(chat.id, user.id)
 
@@ -31,21 +28,28 @@ class ActivityRepository:
                 ActivityEvent.telegram_message_id == message_id,
             )
         )
-        if event.scalar_one_or_none() is not None:
-            return member
+        return member, event.scalar_one_or_none() is not None
 
+    async def record_message(
+        self,
+        *,
+        member: ChatMember,
+        message_id: int,
+        xp_awarded: int,
+        new_level: int,
+        now: datetime,
+    ) -> ChatMember:
         member.message_count += 1
-        awarded = self._policy.award_xp(last_awarded_at=member.last_xp_at, now=now)
-        if awarded:
-            member.xp += awarded
-            member.level = level_for_xp(member.xp)
+        member.xp += xp_awarded
+        member.level = new_level
+        if xp_awarded:
             member.last_xp_at = now
 
         self._session.add(
             ActivityEvent(
                 chat_member_id=member.id,
                 telegram_message_id=message_id,
-                xp_awarded=awarded,
+                xp_awarded=xp_awarded,
             )
         )
         await self._session.flush()
