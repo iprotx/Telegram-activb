@@ -22,8 +22,9 @@ The frontend lives in this repository under `frontend/`.
 - **Current foundation:** aiogram 3.31, SQLAlchemy 2.x async, Alembic, PostgreSQL/SQLite development support, Docker Compose and CI quality gates.
 - **Existing bot features:** registration/profile synchronization, group activity/XP, `/rank`, `/top`, and group-join welcome behavior.
 - **Mini App:** Stage 1 foundation is implemented in PR #38; it is not merged into `main` yet.
-- **Backend API:** Stage 2 implementation is in progress in PR #38.
-- **Telegram auth:** server-side `initData` validation and authenticated `/api/v1/me` are implemented; CI verification is pending.
+- **Backend API:** Stage 2 authentication and Stage 3 catalog foundations are implemented in PR #38; CI verification is pending.
+- **Telegram auth:** server-side `initData` validation and authenticated `/api/v1/me` are implemented.
+- **Catalog:** products migration, LittleFox catalog client, authenticated product endpoints and frontend product cards are implemented.
 
 ## Architecture decisions
 
@@ -43,9 +44,9 @@ See `docs/MVP_PLAN.md` for the detailed staged plan.
 
 1. Documentation/architecture foundation — **implemented in PR #38; not merged**
 2. React/Vite Mini App foundation — **implemented in PR #38; CI verification pending**
-3. Python API + authenticated customer/catalog endpoints — **in progress: auth + `/me` foundation implemented**
-4. Catalog/customer UX — **not started**
-5. Cart/checkout/LittleFox fulfillment — **not started**
+3. Python API + Telegram auth + catalog — **implemented in PR #38; CI verification pending**
+4. Catalog/customer UX, favorites and cart — **in progress / next**
+5. Checkout/LittleFox fulfillment — **not started**
 6. Orders/notifications — **not started**
 7. Referral foundation — **not started**
 8. MVP hardening + test deployment — **not started**
