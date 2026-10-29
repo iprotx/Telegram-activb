@@ -190,6 +190,84 @@ async def test_rank_is_scoped_to_chat_and_orders_ties_deterministically(tmp_path
     await engine.dispose()
 
 
+async def test_top_members_is_chat_scoped_ordered_and_limited(tmp_path: Path) -> None:
+    engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'top.db'}")
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+    async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.create_all)
+
+    async with session_factory() as session:
+        users = [
+            User(
+                telegram_id=720_001,
+                username="top-first",
+                first_name="First",
+                last_name=None,
+            ),
+            User(
+                telegram_id=720_002,
+                username="top-second",
+                first_name="Second",
+                last_name=None,
+            ),
+            User(
+                telegram_id=720_003,
+                username="top-third",
+                first_name="Third",
+                last_name=None,
+            ),
+        ]
+        first_chat = Chat(telegram_id=-720_001, title="First chat")
+        other_chat = Chat(telegram_id=-720_002, title="Other chat")
+        session.add_all([*users, first_chat, other_chat])
+        await session.flush()
+        session.add_all(
+            [
+                ChatMember(
+                    chat_id=first_chat.id,
+                    user_id=users[0].id,
+                    xp=100,
+                    level=2,
+                    message_count=3,
+                ),
+                ChatMember(
+                    chat_id=first_chat.id,
+                    user_id=users[1].id,
+                    xp=300,
+                    level=2,
+                    message_count=5,
+                ),
+                ChatMember(
+                    chat_id=first_chat.id,
+                    user_id=users[2].id,
+                    xp=200,
+                    level=2,
+                    message_count=4,
+                ),
+                ChatMember(
+                    chat_id=other_chat.id,
+                    user_id=users[0].id,
+                    xp=900,
+                    level=4,
+                    message_count=10,
+                ),
+            ]
+        )
+        await session.commit()
+
+        repository = ActivityRepository(session)
+        top = await repository.get_top_members(chat_telegram_id=-720_001, limit=2)
+        assert [(user.username, member.xp) for member, user in top] == [
+            ("top-second", 300),
+            ("top-third", 200),
+        ]
+        other_top = await repository.get_top_members(chat_telegram_id=-720_002)
+        assert [(user.username, member.xp) for member, user in other_top] == [("top-first", 900)]
+
+    await engine.dispose()
+
+
 @pytest.mark.skipif(
     not os.getenv("DATABASE_URL"),
     reason="requires PostgreSQL integration database",

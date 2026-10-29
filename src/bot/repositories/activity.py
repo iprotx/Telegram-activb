@@ -102,6 +102,27 @@ class ActivityRepository:
         member, user, position = row
         return cast(ChatMember, member), cast(User, user), cast(int, position)
 
+    async def get_top_members(
+        self,
+        *,
+        chat_telegram_id: int,
+        limit: int = 10,
+    ) -> list[tuple[ChatMember, User]]:
+        statement = (
+            select(ChatMember, User)
+            .join(Chat, Chat.id == ChatMember.chat_id)
+            .join(User, User.id == ChatMember.user_id)
+            .where(Chat.telegram_id == chat_telegram_id)
+            .order_by(
+                ChatMember.xp.desc(),
+                ChatMember.message_count.desc(),
+                ChatMember.user_id.asc(),
+            )
+            .limit(limit)
+        )
+        result = await self._session.execute(statement)
+        return [(member, user) for member, user in result.all()]
+
     async def _get_or_create_chat(self, telegram_id: int, title: str | None) -> Chat:
         result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))
         chat = result.scalar_one_or_none()

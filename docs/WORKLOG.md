@@ -1,5 +1,16 @@
 # Work Log
 
+## 2026-10-29 — Initial `/top` leaderboard
+
+- **Goal:** show the top 10 active users in the current group.
+- **Changed:** added `/top` handler and a chat-scoped repository query ordered by XP, message count, then user ID; service validates limits between 1 and 50. Empty/private-chat cases return explicit messages.
+- **Architecture:** handler → activity service → activity repository; no schema or migration changes.
+- **Tests added:** service limit validation, handler output/empty/private cases, and SQLite integration coverage for chat isolation, ordering and limit.
+- **Verification:** CI run [#239](https://github.com/iprotx/Telegram-activb/actions/runs/40894068220) passed Ruff format/lint, mypy, Alembic migrations/check, unit tests, PostgreSQL integration tests, pip-audit, Docker build and runtime smoke. The first run caught formatting issues; the next caught redundant type casts; both were fixed before the successful full run.
+- **Branch:** `feat/top-command`.
+- **Next:** review PR #36; merge remains an explicit user decision.
+
+
 ## 2026-10-29 — Initial `/rank` command
 
 - **Goal:** expose existing per-chat XP, level, message count, rank position, and progress to the next level.
@@ -22,8 +33,6 @@
 - **Verification:** source and existing test contracts were inspected from GitHub. No production code, dependencies, or tests were changed; CI is not required to validate runtime behavior changes because none were made. Documentation PR CI remains to be checked.
 - **Branch:** `investigation/transaction-boundaries`.
 - **Next:** merge the documentation PR; then proceed to `/rank` as a separate feature.
-
-# Work Log
 
 ## 2026-10-29 — Configuration boundary refactor
 
