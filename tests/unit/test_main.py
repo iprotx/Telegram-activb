@@ -86,9 +86,7 @@ async def test_run_disposes_database_when_polling_raises(
     )
     dispatcher = cast(
         Dispatcher,
-        SimpleNamespace(
-            start_polling=AsyncMock(side_effect=RuntimeError("polling failed"))
-        ),
+        SimpleNamespace(start_polling=AsyncMock(side_effect=RuntimeError("polling failed"))),
     )
     monkeypatch.setattr(main, "create_database", lambda settings: database)
     monkeypatch.setattr(
