@@ -1,5 +1,14 @@
 # Work Log
 
+## 2026-10-29 — Startup/import-safety regression tests
+
+- **Goal:** cover issue #14's import safety, dispatcher wiring, and startup failure cleanup contracts.
+- **Changed:** added `tests/unit/test_main.py`: an isolated subprocess imports `bot.main` without a token and asserts that no runtime resources/polling start; the dispatcher test verifies custom middleware and root-router registration; a failure-path test verifies database disposal if polling raises.
+- **Production code:** unchanged; all three tests pass against the current implementation.
+- **Verification:** CI run [40869999942](https://github.com/iprotx/Telegram-activb/actions/runs/40869999942) passed Ruff format/lint, mypy, Alembic migrations/check, both general and PostgreSQL pytest suites, dependency audit, and Docker build.
+- **Review state:** PR #29 is open; issue #14 remains open until the change is reviewed and merged.
+- **Next:** after PR #29 is integrated, continue with issue #16 (Docker runtime smoke).
+
 ## 2026-10-29 — Non-AI chat bot feature research plan
 
 - **Goal:** define an evidence-backed process for studying comparable Telegram group bots and selecting deterministic activity, moderation, and admin features.
@@ -8,7 +17,7 @@
 - **No-AI constraint:** exclude AI/LLM/model calls, AI classifiers, and external AI services from product candidates.
 - **Changed:** added `docs/superpowers/plans/2026-10-29-chat-bot-feature-research.md`; linked it from `docs/PROJECT_STATUS.md`; recorded the durable product constraint in `docs/DECISIONS.md`.
 - **Verification:** repository docs/source and open hardening issues were inspected; official reference pages were reviewed. No application code or tests changed, so code quality checks were not run for this documentation-only change.
-- **Next:** continue the agreed reliability sequence with #13; use the research process to shortlist product features after the foundation gaps are addressed.
+- **Next:** finish the remaining reliability gaps (#14 and #16), then perform the architecture/release-readiness review before expanding runtime scope.
 
 ## 2026-10-29 — Production-hardening status reconciliation
 
@@ -27,8 +36,9 @@
 - **Changed:** added `tests/unit/test_error_middleware.py` with two tests: one checks the original exception is re-raised and logged with the expected message/traceback; the other checks a synthetic token and serialized update payload passed through the event/context are not logged.
 - **Production code:** unchanged; the current middleware satisfies these behaviors in the regression tests.
 - **Verification:** CI run [40868768340](https://github.com/iprotx/Telegram-activb/actions/runs/40868768340) passed Ruff format/lint, mypy, Alembic migration/check, both general and PostgreSQL pytest suites, dependency audit, and Docker build.
-- **Review state:** PR #28 is open; no merge performed. Status is **In review**, not Done until the change is integrated.
-- **Next:** after PR #28 is reviewed and merged, take issue #14 (startup/import-side-effect coverage).
+- **Merged:** PR #28, merge commit `5eb3b3d02453bf98af3c8c3aa2d95c6c4e9ddcad`; issue #13 was closed by the PR.
+- **Verification:** CI run [40868768340](https://github.com/iprotx/Telegram-activb/actions/runs/40868768340) passed all configured quality gates for the regression tests; production code was unchanged.
+- **Next:** proceed with issue #14 (startup/import-side-effect coverage).
 
 ## 2026-10-29 — PostgreSQL user repository verification
 
