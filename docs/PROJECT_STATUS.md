@@ -28,7 +28,7 @@ _Last reconciled: 2026-10-29_
 ### P0 — Evidence-backed plan and architecture review
 
 - [ ] Complete review of all hardening iterations; see [detailed plan](superpowers/plans/2026-10-29-production-hardening.md) and [issue #11](https://github.com/iprotx/Telegram-activb/issues/11).
-- [ ] Review the full dependency path from main/routers through handlers, services, repositories, and database infrastructure.
+- [ ] Finish the full dependency-path review from main/routers through handlers, services, repositories, and database infrastructure. A confirmed dependency inversion is tracked in [#18](https://github.com/iprotx/Telegram-activb/issues/18): activity repository imports business policy from services.
 - [ ] Confirm remaining tasks and keep this page aligned with issue/PR/CI state.
 
 ### P1 — Confirmed verification gaps
@@ -37,6 +37,7 @@ _Last reconciled: 2026-10-29_
 - [ ] [#14 Application startup wiring and import-safety tests](https://github.com/iprotx/Telegram-activb/issues/14).
 - [ ] [#15 User schema constraints and PostgreSQL registration concurrency](https://github.com/iprotx/Telegram-activb/issues/15).
 - [ ] [#16 Docker runtime smoke test and release-readiness review](https://github.com/iprotx/Telegram-activb/issues/16).
+- [ ] [#18 Move activity policy decisions out of the repository layer](https://github.com/iprotx/Telegram-activb/issues/18).
 
 ### P2 — Release readiness
 
