@@ -11,7 +11,8 @@ Deliver a testable Telegram Mini App where a real Telegram user can open KEYDROP
 - Stage 0 — documentation and architecture: **implemented in PR #38; not merged**.
 - Stage 1 — React + TypeScript + Vite Mini App foundation: **implemented in PR #38; CI verification pending**.
 - Stage 2 — Telegram authentication + `/api/v1/me`: **implemented in PR #38; CI verification pending**.
-- Stage 2 remaining — catalog API and storefront data flow.
+- Stage 3 — catalog persistence, LittleFox catalog client, product endpoints and basic product cards: **implemented in PR #38; CI verification pending**.
+- Stage 3 remaining — richer catalog UX, favorites and cart.
 - Stage 4+ — checkout, orders, notifications, referrals and deployment remain ahead.
 
 ## MVP definition
@@ -89,6 +90,8 @@ These remain post-MVP capabilities unless a later product decision promotes one 
 **Exit:** a valid Telegram Mini App request resolves exactly one KEYDROP customer, invalid/expired init data is rejected, and the API auth contract is covered by tests.
 
 ### Stage 3 — Catalog and storefront
+
+**Status:** catalog data foundation implemented; richer storefront work remains.
 
 - add product/category persistence and LittleFox catalog synchronization boundary;
 - expose catalog list/detail endpoints;
