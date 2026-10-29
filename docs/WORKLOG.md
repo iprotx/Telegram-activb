@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-10-29 — Transaction boundary investigation (issue #32)
+
+- **Question:** should `ServicesMiddleware` stop wrapping the entire handler in `session.begin()`?
+- **Inspected:** all registered handlers, middleware, user/activity services and repositories, middleware unit tests, and PostgreSQL rollback integration test.
+- **Finding:** only `start_handler` makes a Telegram API call inside the transaction (`message.answer` after user registration). `activity_message_handler` is DB-only and uses the same transaction for user registration plus activity recording.
+- **Existing contract:** unit tests verify commit on success and rollback/re-raise on failure; PostgreSQL integration verifies a newly registered user is rolled back when a handler fails. Repository savepoints handle uniqueness races but do not replace the outer transaction.
+- **Decision:** no production change. There is no evidence of a material transaction-duration problem, while moving commits into services could leave a registered user without corresponding activity if the latter fails. Preserve current update-level atomicity; revisit with measurements or a concrete use case.
+- **Changed:** documented the decision in `docs/DECISIONS.md`, reconciled the architecture plan and project status.
+- **Verification:** source and existing test contracts were inspected from GitHub. No production code, dependencies, or tests were changed; CI is not required to validate runtime behavior changes because none were made. Documentation PR CI remains to be checked.
+- **Branch:** `investigation/transaction-boundaries`.
+- **Next:** merge the documentation PR; then proceed to `/rank` as a separate feature.
+
+# Work Log
+
 ## 2026-10-29 — Configuration boundary refactor
 
 - **Goal:** simplify database URL loading without weakening the application's required `BOT_TOKEN` validation.
@@ -94,4 +108,5 @@ Append a short entry after every meaningful task or PR. Newest entries go first.
 - **Merged:** PR #8 into `main`.
 - **Verification:** main CI was reported green after merge.
 - **Next:** continue reliability review with evidence-based, bounded changes.
+
 
