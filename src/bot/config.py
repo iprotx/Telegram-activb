@@ -34,4 +34,4 @@ class Settings(BaseSettings):
 
 
 def get_database_url() -> str:
-    return Settings(bot_token="").database_url
+    return Settings(bot_token=SecretStr("")).database_url
