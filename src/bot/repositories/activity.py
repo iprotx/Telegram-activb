@@ -87,7 +87,11 @@ class ActivityRepository:
         except IntegrityError:
             pass
 
+        # Lock the row after a concurrent insert won the unique-key race. Without this,
+        # concurrent first messages can both update the same member without serialization.
         result = await self._session.execute(
-            select(ChatMember).where(ChatMember.chat_id == chat_id, ChatMember.user_id == user_id)
+            select(ChatMember)
+            .where(ChatMember.chat_id == chat_id, ChatMember.user_id == user_id)
+            .with_for_update()
         )
         return result.scalar_one()
