@@ -69,7 +69,47 @@ Never put SQL queries, persistence details, or business rules directly in handle
 - Use Alembic for schema changes; never edit production schema manually.
 - Test transaction and failure paths when they matter to the behavior.
 
-### 6. Telegram safety
+### 6. Preventing Alembic drift
+
+A migration must always match the ORM model. Do not let them diverge in intent, naming, or constraint semantics.
+
+- Treat the ORM model and Alembic migration as one synchronized change set.
+- After changing a model, generate the migration with `alembic revision --autogenerate -m "..."` instead of editing the migration by hand.
+- Review the generated migration before committing. Confirm the exact table, column, unique constraint, index, and foreign key names match the model.
+- Prefer explicit names for constraints and indexes to avoid Alembic seeing the same logical thing as two different objects.
+- Do not mix equivalent definitions in different forms, for example:
+  - `telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True)`
+  - and a separate migration that creates `ix_chats_telegram_id` as a unique index with a different implied constraint shape
+- If a unique field is intended to be unique, define it explicitly and consistently:
+
+```python
+class Chat(Base):
+    __tablename__ = "chats"
+    __table_args__ = (UniqueConstraint("telegram_id", name="uq_chats_telegram_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+```
+
+and in the migration:
+
+```python
+op.create_unique_constraint("uq_chats_telegram_id", "chats", ["telegram_id"])
+```
+
+or, if using an index, make the naming and semantics match exactly.
+
+- Never commit a schema change where the generated migration differs from the model in a way that `alembic check` would flag.
+- Before pushing, run both:
+
+```bash
+alembic upgrade head
+alembic check
+```
+
+- If `alembic check` fails, do not suppress it; fix the root cause by aligning the migration with the model, not by weakening the check.
+
+### 7. Telegram safety
 
 - Target aiogram 3.31 APIs; do not introduce aiogram 2-style patterns.
 - Do not start polling during import.
@@ -84,7 +124,7 @@ Project-local skills live in `skills/<skill-name>/SKILL.md`.
 - `skills/ub-mode/SKILL.md` — disciplined change workflow: make it work, make it right, then practice.
 - `skills/python-aiogram-coder/SKILL.md` — project-specific aiogram architecture and quality rules.
 
-When `/ub-mode` is requested or used, apply it to the next code change. If `crapper`, `dryer`, or `mutator` are not installed, skip those individual gates and explicitly report that they were unavailable; do not fake their results.
+When `/ub-mode` is requested or used, apply it to the next code change. If `crapper`, `dryer`, or `mutator` are not installed, skip those individual gates and explicitly report that they were unavailable.
 
 ## Quality gates
 
