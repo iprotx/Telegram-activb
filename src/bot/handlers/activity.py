@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aiogram import F, Router
 from aiogram.types import Message
@@ -29,5 +29,5 @@ async def activity_message_handler(
         chat_title=message.chat.title,
         user=user,
         message_id=message.message_id,
-        now=datetime.now(timezone.utc),
+        now=datetime.now(UTC),
     )
