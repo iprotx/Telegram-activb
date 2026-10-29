@@ -42,10 +42,7 @@ async def test_error_middleware_does_not_log_update_or_context_secrets(
 
     class SensitiveEvent:
         def __repr__(self) -> str:
-            return (
-                f"TelegramUpdate(bot_token={token_sentinel!r}, "
-                f"payload={payload_sentinel!r})"
-            )
+            return f"update token={token_sentinel}; payload={payload_sentinel}"
 
     middleware = ErrorMiddleware()
 
