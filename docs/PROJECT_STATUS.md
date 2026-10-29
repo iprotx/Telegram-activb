@@ -5,9 +5,9 @@ _Last reconciled: 2026-10-29_
 ## Current snapshot
 
 - **Default branch:** `main`
-- **Latest merged work:** PR #33 separated database settings from bot credentials; merge commit [ec6ad18](https://github.com/iprotx/Telegram-activb/commit/ec6ad18c7477508f3854ff32308dc897f3c94658).
-- **Current product shape:** aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Current engineering task:** issue #32 transaction-boundary investigation. Findings are recorded on branch `investigation/transaction-boundaries`; no production transaction changes are recommended.
+- **Latest merged work:** PR #34 recorded the transaction-boundary investigation; merge commit [42ca52a](https://github.com/iprotx/Telegram-activb/commit/42ca52a4855b71eb08f1282ed0ac35ae5500a064).
+- **Current product shape:** aiogram bot with user registration, per-chat activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
+- **Current engineering task:** implement `/rank` in branch `feat/rank-command`; no schema migration is needed.
 
 ## Architecture and constraints
 
@@ -25,11 +25,13 @@ _Last reconciled: 2026-10-29_
 - **Safe error logging:** PR #28.
 - **Startup/import safety:** PR #29.
 - **Docker runtime smoke and migration validation:** PR #30.
-- **Transaction boundaries:** existing unit tests cover commit/rollback, and a PostgreSQL integration test confirms rollback when a handler fails. Investigation found one external Telegram call inside a transaction (`/start` response); current evidence does not justify changing the transaction contract.
+- **Transaction boundaries:** PR #34 documented why the existing update-level transaction is retained; issue #32 investigation completed.
+- **Rank command:** in progress; query is chat-scoped and uses deterministic ordering by XP, message count, then user ID. Unit and SQLite repository tests added; CI verification pending.
 
 ## Current backlog
 
-- [ ] **Product features:** implement deterministic `/rank`, then `/top`, each in a separate branch with unit and PostgreSQL coverage.
+- [ ] **`/rank`:** finish review and confirm CI before merge.
+- [ ] **`/top`:** implement as a separate feature branch after `/rank` is accepted.
 - [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
 
 ## Evidence rules
@@ -43,6 +45,6 @@ _Last reconciled: 2026-10-29_
 
 - [Engineering rules](../AGENTS.md)
 - [Architecture cleanup plan](superpowers/plans/2026-10-29-architecture-cleanup.md)
+- [Feature research plan](superpowers/plans/2026-10-29-chat-bot-feature-research.md)
 - [Decision log](DECISIONS.md)
 - [Worklog](WORKLOG.md)
-- [Issue #32](https://github.com/iprotx/Telegram-activb/issues/32)
