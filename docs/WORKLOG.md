@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-29 — Stage 2: Python HTTP API + Telegram authentication foundation
+
+- **Goal:** establish the trusted server-side identity boundary between the KEYDROP Mini App and the existing Python/PostgreSQL backend.
+- **Changed:** added FastAPI/Uvicorn dependencies, API settings, Telegram `initData` HMAC validation, authenticated `GET /api/v1/me`, health endpoint and API entrypoint.
+- **Persistence:** authenticated Telegram users are resolved through the existing `UserRepository`, preserving the current user table and repository layer.
+- **Tests:** added TDD coverage for valid signatures, invalid signatures, expired data, invalid user payloads and authenticated customer bootstrap.
+- **Security:** the API accepts raw Telegram init data through `Authorization: tma <initData>`, validates it server-side, and only then resolves/updates the customer. LittleFox and database access remain server-side.
+- **Verification status:** implementation is committed to the PR branch; GitHub CI verification is still required before declaring the stage complete.
+- **Next:** finish CI verification, then implement Stage 3 catalog/product endpoints and storefront data flow.
+
 ## 2026-10-29 — Stage 1: React + TypeScript + Vite Mini App foundation
 
 - **Goal:** establish the first runnable KEYDROP Mini App foundation without coupling the frontend to PostgreSQL or LittleFox.
