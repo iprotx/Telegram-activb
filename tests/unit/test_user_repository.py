@@ -20,5 +20,6 @@ async def test_user_repository_creates_and_reads_user() -> None:
 
         same_user = await repository.get_or_create(telegram_id=42, username="alice-2")
         assert same_user.id == user.id
+        assert same_user.username == "alice-2"
 
     await engine.dispose()
