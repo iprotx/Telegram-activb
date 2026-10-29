@@ -2,6 +2,13 @@
 
 Production-oriented Telegram bot foundation using aiogram 3.31 and SQLAlchemy 2.
 
+## Project status and planning
+
+- [Current status, priorities and backlog](docs/PROJECT_STATUS.md)
+- [Work log](docs/WORKLOG.md)
+- [Decision log](docs/DECISIONS.md)
+- [Detailed production-hardening plan](docs/superpowers/plans/2026-10-29-production-hardening.md)
+
 ## Architecture
 
 ```text
@@ -58,5 +65,3 @@ Project-local engineering skills are kept under `skills/`:
 
 - `skills/ub-mode/SKILL.md` — disciplined TDD, architecture, review and debugging workflow.
 - `skills/python-aiogram-coder/SKILL.md` — aiogram-specific project conventions.
-
-The detailed production-hardening execution plan is in `docs/superpowers/plans/2026-10-29-production-hardening.md`.
