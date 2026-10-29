@@ -25,4 +25,4 @@ jobs:
       - name: Tests
         run: pytest -q
       - name: Alembic
-        run: alembic check
+        run: alembic upgrade head && alembic check
