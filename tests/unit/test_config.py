@@ -10,7 +10,7 @@ def test_settings_load_from_environment(monkeypatch: pytest.MonkeyPatch) -> None
 
     settings = Settings()
 
-    assert settings.bot_token == "123:test"
+    assert settings.bot_token_value == "123:test"
     assert settings.database_url == "sqlite+aiosqlite:///./test.db"
 
 
