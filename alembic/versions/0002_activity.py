@@ -58,7 +58,9 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("chat_member_id", "telegram_message_id", name="uq_activity_message"),
     )
-    op.create_index("ix_activity_events_chat_member_id", "activity_events", ["chat_member_id"], unique=False)
+    op.create_index(
+        "ix_activity_events_chat_member_id", "activity_events", ["chat_member_id"], unique=False
+    )
 
 
 def downgrade() -> None:
