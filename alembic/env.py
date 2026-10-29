@@ -1,11 +1,11 @@
 from logging.config import fileConfig
-from os import getenv
 
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from bot.config import get_database_url
 from bot.db import models  # noqa: F401
 from bot.db.base import Base
 
@@ -14,9 +14,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-database_url = getenv("DATABASE_URL")
-if database_url:
-    config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
+config.set_main_option("sqlalchemy.url", get_database_url().replace("%", "%%"))
 
 target_metadata = Base.metadata
 
