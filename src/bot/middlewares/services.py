@@ -21,10 +21,5 @@ class ServicesMiddleware(BaseMiddleware):
     ) -> Any:
         async with self._session_factory() as session:
             data["user_service"] = UserService(UserRepository(session))
-            try:
-                result = await handler(event, data)
-                await session.commit()
-                return result
-            except Exception:
-                await session.rollback()
-                raise
+            async with session.begin():
+                return await handler(event, data)

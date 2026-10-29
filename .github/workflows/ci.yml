@@ -9,6 +9,22 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: telegram_activb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d telegram_activb"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/telegram_activb
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22,7 +38,13 @@ jobs:
         run: ruff check .
       - name: Mypy
         run: mypy src
+      - name: Alembic migrations
+        run: alembic upgrade head
       - name: Tests
         run: pytest -q
-      - name: Alembic
-        run: alembic upgrade head && alembic check
+      - name: Alembic check
+        run: alembic check
+      - name: Dependency audit
+        run: python -m pip install pip-audit && pip-audit
+      - name: Docker build
+        run: docker build --tag telegram-activb:ci .

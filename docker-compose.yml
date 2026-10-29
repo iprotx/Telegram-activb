@@ -1,13 +1,29 @@
 services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-telegram_activb}
+      POSTGRES_USER: ${POSTGRES_USER:-telegram_activb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   bot:
     build: .
     env_file:
       - .env
     environment:
-      DATABASE_URL: sqlite+aiosqlite:////app/data/bot.db
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
-    volumes:
-      - bot-data:/app/data
 
 volumes:
-  bot-data:
+  postgres-data:

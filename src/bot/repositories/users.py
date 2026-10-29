@@ -22,16 +22,15 @@ class UserRepository:
             self._synchronize_profile(user, username, first_name, last_name)
             return user
 
-        user = User(
-            telegram_id=telegram_id,
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-        )
-        self._session.add(user)
-
         try:
             async with self._session.begin_nested():
+                user = User(
+                    telegram_id=telegram_id,
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+                self._session.add(user)
                 await self._session.flush()
         except IntegrityError:
             result = await self._session.execute(
