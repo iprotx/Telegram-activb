@@ -26,7 +26,7 @@ _Last reconciled: 2026-10-29_
 | 3. Middleware transaction boundaries | Done | Commit/rollback behavior is covered, including PostgreSQL rollback integration coverage. |
 | 4. User schema/migrations | Done | PR #25 verifies PostgreSQL uniqueness and nullable profile fields; Alembic checks are part of CI. |
 | 5. Error boundary and safe logging | Done | PR #28 merged as `5eb3b3d02453bf98af3c8c3aa2d95c6c4e9ddcad`; issue #13 closed. CI run `40868768340` passed all configured gates for the regression tests. |
-| 6. Configuration and startup validation | In review | PR #29 adds tests for import-time side effects, dispatcher middleware/router wiring, and database cleanup after polling failure; CI is pending. |
+| 6. Configuration and startup validation | In review | PR #29 adds import-side-effect, dispatcher wiring, and cleanup tests; CI run `40869999942` passed all configured quality gates. Merge pending. |
 | 7. User repository concurrency/idempotence | Done | PR #25 adds dedicated PostgreSQL concurrency coverage for `get_or_create`. |
 | 8. Docker runtime smoke path | Not started | CI builds the image, but there is no verified container startup smoke test. See #16. |
 | 9. CI quality gate hardening | Done | Current CI covers formatting, lint, mypy, migrations, tests, PostgreSQL integration tests, Alembic drift, dependency audit and Docker build. |
@@ -37,7 +37,7 @@ _Last reconciled: 2026-10-29_
 
 ### P1 — Production-hardening gaps
 
-- [ ] **#14 — Configuration/startup verification.** PR #29 is in review with startup/import-side-effect and dispatcher-wiring tests; confirm CI, then merge only after review.
+- [ ] **#14 — Configuration/startup verification.** PR #29 adds startup/import-side-effect, dispatcher wiring, and polling-failure cleanup tests; CI run `40869999942` passed all configured gates. Awaiting review/merge.
 - [ ] **#16 — Docker runtime smoke.** Verify the documented container path actually starts with declared environment/configuration rather than only building successfully.
 - [ ] **#18 — Architecture refactor.** The implementation is already merged in PR #21; the issue itself is now stale and should be closed/updated after this reconciliation.
 
