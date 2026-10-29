@@ -14,14 +14,15 @@ The target product consists of:
 - LittleFox as external digital-goods fulfillment;
 - customer preferences, notifications and referrals owned by KEYDROP.
 
-The frontend is planned inside this repository under `frontend/`.
+The frontend lives in this repository under `frontend/`.
 
 ## Current repository state
 
 - **Default branch:** `main`
 - **Current foundation:** aiogram 3.31, SQLAlchemy 2.x async, Alembic, PostgreSQL/SQLite development support, Docker Compose and CI quality gates.
 - **Existing bot features:** registration/profile synchronization, group activity/XP, `/rank`, `/top`, and group-join welcome behavior.
-- **Product work:** Mini App/API/MVP implementation has not started yet.
+- **Mini App:** Stage 1 foundation is implemented in PR #38; it is not merged into `main` yet.
+- **Backend API:** not implemented yet.
 
 ## Architecture decisions
 
@@ -39,8 +40,8 @@ The frontend is planned inside this repository under `frontend/`.
 
 See `docs/MVP_PLAN.md` for the detailed staged plan.
 
-1. Documentation/architecture foundation — **in progress**
-2. React/Vite Mini App foundation — **not started**
+1. Documentation/architecture foundation — **implemented in PR #38; not merged**
+2. React/Vite Mini App foundation — **implemented in PR #38; CI verification pending**
 3. Python API + authenticated customer/catalog endpoints — **not started**
 4. Catalog/customer UX — **not started**
 5. Cart/checkout/LittleFox fulfillment — **not started**
