@@ -203,7 +203,6 @@ async def test_activity_service_returns_none_when_rank_does_not_exist() -> None:
     }
 
 
-
 async def test_activity_service_returns_top_members_for_requested_chat() -> None:
     member = make_member(xp=250, level=2)
     user = make_user()
