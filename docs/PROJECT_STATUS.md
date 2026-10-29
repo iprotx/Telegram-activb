@@ -5,64 +5,56 @@ _Last reconciled: 2026-10-29_
 ## Current snapshot
 
 - **Default branch:** main
-- **Latest merged change:** PR #10, `fix: harden activity timestamp and concurrency handling`
-- **Latest merged commit:** `ad20f34c46db52e8d1da9b5a5eba8d83d33cf008`
-- **CI evidence for PR #10:** [run 40845554427](https://github.com/iprotx/Telegram-activb/actions/runs/40845554427) — success.
-- **Current product shape:** production-oriented aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose and CI quality gates.
+- **Latest merged change:** PR #12, project status, roadmap, decision log, work log, and reporting rules.
+- **Latest merged commit:** 6816dd2bfab5e346f8680340fab3127d90dfe0d6.
+- **Main CI:** [run 40846550635](https://github.com/iprotx/Telegram-activb/actions/runs/40846550635) — success.
+- **Product shape:** aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
+- **Release status:** not yet certified production-ready. CI is green, but container runtime smoke, full architecture review, and several focused test gaps remain.
 
 ## Recently completed
 
-- [x] Merge PR #8: activity levels and database migration conflict resolution.
-- [x] Merge PR #10: normalize activity timestamps to UTC, use timezone-aware `last_xp_at`, handle concurrent first-message creation, and add activity repository integration tests.
-- [x] Verify PR #10 CI passed: Ruff format/lint, mypy, tests, Alembic checks, dependency audit and Docker build were green in the completed workflow.
-- [x] Preserve architecture boundaries documented in `AGENTS.md`: handlers → services → repositories → database infrastructure.
+- [x] PR #8: activity levels and migration conflict resolution.
+- [x] PR #10: activity timestamp normalization, timezone-aware persistence, concurrency handling, and activity repository tests. [CI](https://github.com/iprotx/Telegram-activb/actions/runs/40845554427)
+- [x] PR #12: project status/roadmap, decision log, work log, README links, and stage-reporting rules. [CI](https://github.com/iprotx/Telegram-activb/actions/runs/40846301942)
+- [x] Verify main CI after PR #12: [run 40846550635](https://github.com/iprotx/Telegram-activb/actions/runs/40846550635).
 
 ## In progress
 
-- [ ] Establish a maintained project-management layer: status, roadmap, decision log, and work log. This PR creates the initial baseline; review it against the existing implementation plan before treating all roadmap entries as current truth.
+- [ ] Reconcile the production-hardening plan against actual source, tests, migrations, and CI evidence. The evidence-backed audit table is being added to the detailed plan in a documentation-only PR.
+- [ ] After the audit is merged, perform the whole-branch architecture review and update statuses based on that review.
 
 ## Prioritized backlog
 
-These are engineering follow-ups drawn from the existing production-hardening plan in `docs/superpowers/plans/2026-10-29-production-hardening.md`. The plan has older unchecked boxes and must be reconciled against current code before work is claimed complete.
+### P0 — Evidence-backed plan and architecture review
 
-### P0 — Reconcile the implementation plan
+- [ ] Complete review of all hardening iterations; see [detailed plan](superpowers/plans/2026-10-29-production-hardening.md) and [issue #11](https://github.com/iprotx/Telegram-activb/issues/11).
+- [ ] Finish the full dependency-path review from main/routers through handlers, services, repositories, and database infrastructure. A confirmed dependency inversion is tracked in [#18](https://github.com/iprotx/Telegram-activb/issues/18): activity repository imports business policy from services.
+- [ ] Confirm remaining tasks and keep this page aligned with issue/PR/CI state.
 
-- [ ] Audit each plan iteration against current source, tests, migrations, and CI evidence.
-- [ ] Update stale checkboxes and obsolete descriptions; do not infer completion from a file merely existing.
-- [ ] Convert confirmed remaining work into bounded GitHub issues or explicit roadmap tasks with acceptance criteria.
+### P1 — Confirmed verification gaps
 
-**Acceptance:** every plan iteration has one of: Done (with evidence), In progress, Blocked (with reason), or Not started.
-
-### P1 — Close remaining production-hardening gaps
-
-Candidate work items from the existing plan; status intentionally remains unverified until the P0 audit:
-
-- [ ] User profile synchronization on repeated registration.
-- [ ] Explicit `/start` behavior coverage, including missing optional profile fields.
-- [ ] Middleware transaction commit/rollback tests.
-- [ ] User schema/constraint integration coverage and clean-database migration verification.
-- [ ] Error-boundary tests and safe logging review.
-- [ ] Configuration/startup validation and import-side-effect tests.
-- [ ] User repository duplicate-registration concurrency test.
-- [ ] Docker runtime smoke test, beyond image build.
-- [ ] Verify CI gates match contributor documentation.
-- [ ] Whole-branch architecture/security review.
+- [ ] [#13 Error middleware propagation and safe logging tests](https://github.com/iprotx/Telegram-activb/issues/13).
+- [ ] [#14 Application startup wiring and import-safety tests](https://github.com/iprotx/Telegram-activb/issues/14).
+- [ ] [#15 User schema constraints and PostgreSQL registration concurrency](https://github.com/iprotx/Telegram-activb/issues/15).
+- [ ] [#16 Docker runtime smoke test and release-readiness review](https://github.com/iprotx/Telegram-activb/issues/16).
+- [ ] [#18 Move activity policy decisions out of the repository layer](https://github.com/iprotx/Telegram-activb/issues/18).
+- [ ] [#20 Fix Alembic/runtime database URL parity and verify SQLite migrations](https://github.com/iprotx/Telegram-activb/issues/20).
 
 ### P2 — Release readiness
 
-- [ ] Define the intended first release scope and operator acceptance criteria.
-- [ ] Verify clean deployment from documented setup with required environment variables and a fresh database.
-- [ ] Record any remaining operational limitations before calling the bot production-ready.
+- [ ] Define first-release scope and operator acceptance criteria.
+- [ ] Verify a clean deployment from documented setup with required environment variables and a fresh database.
+- [ ] Record operational limitations before describing the bot as production-ready.
 
 ## Working agreements
 
-1. Start each substantial task with a written mini-plan: goal, scope, assumptions, risks/dependencies, and acceptance criteria.
-2. Work in bounded steps. Before starting a new step, report the prior step's result and unresolved items.
-3. Never mark an item done without concrete evidence (tests, CI link, diff, or explicit decision).
-4. Prefer GitHub issues for actionable backlog items; keep this document as the human-readable overview.
-5. Update this status file and the work log at the end of each meaningful task/PR.
-6. Do not merge PRs or perform destructive/release actions without explicit user approval.
-7. Final reports must separate changed, verified, not verified, risks/blockers, and next step.
+1. Start substantial tasks with goal, scope, assumptions, risks/dependencies, and acceptance criteria.
+2. Work in bounded stages and report each stage before moving to a separate one.
+3. Mark work done only with evidence: test, CI link, diff, or explicit decision.
+4. Use GitHub issues for actionable tasks and this page as the overview.
+5. Update this page and the work log after each meaningful task/PR; record durable decisions in DECISIONS.md.
+6. Do not merge PRs, deploy, or perform destructive/release actions without explicit user approval.
+7. Reports distinguish **changed**, **verified**, **not verified**, **risks/blockers**, and **next step**.
 
 ## Links
 
