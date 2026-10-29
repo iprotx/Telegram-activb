@@ -26,11 +26,11 @@ _Last reconciled: 2026-10-29_
 - **Startup/import safety:** PR #29.
 - **Docker runtime smoke and migration validation:** PR #30.
 - **Transaction boundaries:** PR #34 documented why the existing update-level transaction is retained; issue #32 investigation completed.
-- **Rank command:** in progress; query is chat-scoped and uses deterministic ordering by XP, message count, then user ID. Unit and SQLite repository tests added; CI verification pending.
+- **Rank command:** implemented on branch `feat/rank-command`; CI run [#215](https://github.com/iprotx/Telegram-activb/actions/runs/40892928139) passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
 
 ## Current backlog
 
-- [ ] **`/rank`:** finish review and confirm CI before merge.
+- [ ] **`/rank`:** review and merge PR #35 after explicit approval.
 - [ ] **`/top`:** implement as a separate feature branch after `/rank` is accepted.
 - [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
 
