@@ -56,9 +56,7 @@ class ActivityRepository:
         return member
 
     async def _get_or_create_chat(self, telegram_id: int, title: str | None) -> Chat:
-        result = await self._session.execute(
-            select(Chat).where(Chat.telegram_id == telegram_id)
-        )
+        result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))
         chat = result.scalar_one_or_none()
         if chat is not None:
             chat.title = title
@@ -72,9 +70,7 @@ class ActivityRepository:
         except IntegrityError:
             pass
 
-        result = await self._session.execute(
-            select(Chat).where(Chat.telegram_id == telegram_id)
-        )
+        result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))
         return result.scalar_one()
 
     async def _get_or_create_member(self, chat_id: int, user_id: int) -> ChatMember:
