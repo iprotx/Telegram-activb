@@ -1,4 +1,4 @@
-from logging import getLevelNamesMapping
+import logging
 
 import pytest
 from pydantic import ValidationError
@@ -46,7 +46,7 @@ def test_settings_validate_log_level(monkeypatch: pytest.MonkeyPatch) -> None:
     with pytest.raises(ValidationError, match="LOG_LEVEL"):
         Settings()
 
-    for level in getLevelNamesMapping():
-        if isinstance(getLevelNamesMapping()[level], int):
+    for level in logging.getLevelNamesMapping():
+        if isinstance(logging.getLevelNamesMapping()[level], int):
             monkeypatch.setenv("LOG_LEVEL", level)
             assert Settings().log_level == level

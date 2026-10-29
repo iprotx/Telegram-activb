@@ -1,4 +1,4 @@
-from logging import getLevelNamesMapping
+import logging
 
 from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     @classmethod
     def validate_log_level(cls, value: str) -> str:
         normalized = value.upper()
-        if normalized not in getLevelNamesMapping():
+        if normalized not in logging.getLevelNamesMapping():
             raise ValueError("LOG_LEVEL must be a valid Python logging level")
         return normalized
 
