@@ -22,7 +22,6 @@ class ChatMember(Base):
     message_count: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
     last_xp_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
-    # Keep server-side timestamps consistent on insert and update.
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), onupdate=func.now(), nullable=False
     )
