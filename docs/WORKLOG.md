@@ -6,9 +6,9 @@
 - **Changed:** added `/top` handler and a chat-scoped repository query ordered by XP, message count, then user ID; service validates limits between 1 and 50. Empty/private-chat cases return explicit messages.
 - **Architecture:** handler → activity service → activity repository; no schema or migration changes.
 - **Tests added:** service limit validation, handler output/empty/private cases, and SQLite integration coverage for chat isolation, ordering and limit.
-- **Verification:** CI pending for this branch; local execution is unavailable through the connected GitHub tools.
+- **Verification:** CI run [#239](https://github.com/iprotx/Telegram-activb/actions/runs/40894068220) passed Ruff format/lint, mypy, Alembic migrations/check, unit tests, PostgreSQL integration tests, pip-audit, Docker build and runtime smoke. The first run caught formatting issues; the next caught redundant type casts; both were fixed before the successful full run.
 - **Branch:** `feat/top-command`.
-- **Next:** inspect CI and fix failures before opening/recommending merge.
+- **Next:** review PR #36; merge remains an explicit user decision.
 
 
 ## 2026-10-29 — Initial `/rank` command
