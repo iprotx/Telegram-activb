@@ -33,6 +33,13 @@ class ActivityRepositoryProtocol(Protocol):
         username: str | None = None,
     ) -> tuple[ChatMember, User, int] | None: ...
 
+    async def get_top_members(
+        self,
+        *,
+        chat_telegram_id: int,
+        limit: int = 10,
+    ) -> list[tuple[ChatMember, User]]: ...
+
 
 class ActivityService:
     def __init__(
@@ -87,4 +94,17 @@ class ActivityService:
             chat_telegram_id=chat_telegram_id,
             user_telegram_id=user_telegram_id,
             username=username,
+        )
+
+    async def get_top_members(
+        self,
+        *,
+        chat_telegram_id: int,
+        limit: int = 10,
+    ) -> list[tuple[ChatMember, User]]:
+        if not 1 <= limit <= 50:
+            raise ValueError("limit must be between 1 and 50")
+        return await self._repository.get_top_members(
+            chat_telegram_id=chat_telegram_id,
+            limit=limit,
         )
