@@ -5,35 +5,32 @@ _Last reconciled: 2026-10-29_
 ## Current snapshot
 
 - **Default branch:** `main`
-- **Current main HEAD:** `fe25dba738f8201646772f6f8409c9d77c088705` — merge of PR #31.
-- **Latest merged work:** PR #30 adds Docker runtime smoke coverage; PR #31 records the minimal architecture-cleanup plan. PR #31 itself did not change application code.
-- **Current product shape:** production-oriented aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Current engineering task:** [PR #33](https://github.com/iprotx/Telegram-activb/pull/33) separates database configuration from the required Telegram bot token; CI run [40888401905](https://github.com/iprotx/Telegram-activb/actions/runs/40888401905) passed all configured checks.
+- **Latest merged work:** PR #33 separated database settings from bot credentials; merge commit [ec6ad18](https://github.com/iprotx/Telegram-activb/commit/ec6ad18c7477508f3854ff32308dc897f3c94658).
+- **Current product shape:** aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
+- **Current engineering task:** issue #32 transaction-boundary investigation. Findings are recorded on branch `investigation/transaction-boundaries`; no production transaction changes are recommended.
 
 ## Architecture and constraints
 
 - Preserve `handlers → services → repositories → database infrastructure`.
 - Keep activity/XP policy in services and persistence in repositories.
-- Do not change middleware transaction scope without dedicated regression tests and a clear rollback contract; see [issue #32](https://github.com/iprotx/Telegram-activb/issues/32).
+- Preserve update-level atomicity for registration + activity unless a tested transaction API replaces it.
 - Keep product behavior deterministic; no AI/LLM/model calls or external AI services.
 - Do not add infrastructure without measured need.
 
 ## Reliability and verification
 
-- **User profile synchronization and registration concurrency:** covered by unit and PostgreSQL integration tests.
+- **Registration concurrency and nullable profile fields:** unit and PostgreSQL integration coverage.
 - **Activity policy dependency direction:** corrected in PR #21.
-- **Configuration and Alembic URL alignment:** PR #24; environment variables continue to override `.env`.
-- **PostgreSQL uniqueness/concurrency:** PR #25.
+- **Configuration/Alembic URL:** PR #24 and PR #33; `BOT_TOKEN` remains required by the app while Alembic can load DB settings independently.
 - **Safe error logging:** PR #28.
 - **Startup/import safety:** PR #29.
-- **Docker runtime smoke and migration validation:** PR #30; CI runs formatting, lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic drift check, dependency audit, Docker build, and runtime smoke.
-- **Architecture cleanup:** PR #31 added the plan only. PR #33 makes a narrowly scoped configuration refactor; runtime transaction boundaries and activity semantics remain unchanged. CI run #195 passed every configured step.
+- **Docker runtime smoke and migration validation:** PR #30.
+- **Transaction boundaries:** existing unit tests cover commit/rollback, and a PostgreSQL integration test confirms rollback when a handler fails. Investigation found one external Telegram call inside a transaction (`/start` response); current evidence does not justify changing the transaction contract.
 
 ## Current backlog
 
-- [ ] **#32 — Transaction boundary investigation.** Determine whether any transaction scope change is warranted; retain current behavior unless evidence justifies a change.
-- [ ] **PR #33 review.** CI is green; review and merge remain explicit steps.
-- [ ] **Product scope.** The research plan lists deterministic candidates such as `/rank` and `/top`; these remain separate from architecture cleanup.
+- [ ] **Product features:** implement deterministic `/rank`, then `/top`, each in a separate branch with unit and PostgreSQL coverage.
+- [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
 
 ## Evidence rules
 
@@ -48,3 +45,4 @@ _Last reconciled: 2026-10-29_
 - [Architecture cleanup plan](superpowers/plans/2026-10-29-architecture-cleanup.md)
 - [Decision log](DECISIONS.md)
 - [Worklog](WORKLOG.md)
+- [Issue #32](https://github.com/iprotx/Telegram-activb/issues/32)
