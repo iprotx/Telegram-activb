@@ -56,7 +56,9 @@ class FakeActivityRepository:
         return member
 
 
-def make_member(*, xp: int = 0, level: int = 1, last_xp_at: datetime | None = None) -> ChatMember:
+def make_member(
+    *, xp: int = 0, level: int = 1, last_xp_at: datetime | None = None
+) -> ChatMember:
     return ChatMember(
         id=1,
         chat_id=10,
