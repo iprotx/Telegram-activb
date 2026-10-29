@@ -15,21 +15,13 @@ class ChatMember(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    chat_id: Mapped[int] = mapped_column(
-        ForeignKey("chats.id", ondelete="CASCADE"), nullable=False
-    )
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     xp: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
     level: Mapped[int] = mapped_column(Integer, server_default="1", nullable=False)
-    message_count: Mapped[int] = mapped_column(
-        Integer, server_default="0", nullable=False
-    )
+    message_count: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
     last_xp_at: Mapped[datetime | None] = mapped_column(nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), onupdate=func.now(), nullable=False
     )
