@@ -33,6 +33,7 @@ _Last reconciled: 2026-10-29_
 
 - [ ] **`/top`:** finish implementation, verify CI and review PR before merge.
 - [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
+
 ## Evidence rules
 
 1. A task is **Done** only with concrete evidence: tests, CI, a merged commit, or an explicit architectural decision.
