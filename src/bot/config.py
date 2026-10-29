@@ -26,6 +26,8 @@ class Settings(DatabaseSettings):
     api_port: int = 8000
     telegram_init_data_max_age: int = 3600
     cors_origins: list[str] = ["http://localhost:5173"]
+    littlefox_api_key: SecretStr | None = None
+    littlefox_base_url: str = "https://littlefox-api.ru/api/v1"
 
     @field_validator("log_level")
     @classmethod
@@ -45,6 +47,10 @@ class Settings(DatabaseSettings):
     @property
     def bot_token_value(self) -> str:
         return self.bot_token.get_secret_value()
+
+    @property
+    def littlefox_api_key_value(self) -> str | None:
+        return self.littlefox_api_key.get_secret_value() if self.littlefox_api_key else None
 
 
 def get_database_url() -> str:
