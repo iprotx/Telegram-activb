@@ -7,7 +7,7 @@ _Last reconciled: 2026-10-29_
 - **Default branch:** `main`
 - **Latest merged work:** PR #34 recorded the transaction-boundary investigation; merge commit [42ca52a](https://github.com/iprotx/Telegram-activb/commit/42ca52a4855b71eb08f1282ed0ac35ae5500a064).
 - **Current product shape:** aiogram bot with user registration, per-chat activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Current engineering task:** implement `/rank` in branch `feat/rank-command`; no schema migration is needed.
+- **Latest product feature:** `/rank` merged in PR #35 ([merge commit](https://github.com/iprotx/Telegram-activb/commit/1a29867759a338c15dfddcce075d87bbc09bd4c6)); implementation CI run [#215](https://github.com/iprotx/Telegram-activb/actions/runs/40892928139) passed all configured checks.
 
 ## Architecture and constraints
 
@@ -26,14 +26,13 @@ _Last reconciled: 2026-10-29_
 - **Startup/import safety:** PR #29.
 - **Docker runtime smoke and migration validation:** PR #30.
 - **Transaction boundaries:** PR #34 documented why the existing update-level transaction is retained; issue #32 investigation completed.
-- **Rank command:** implemented on branch `feat/rank-command`; CI run [#215](https://github.com/iprotx/Telegram-activb/actions/runs/40892928139) passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
+- **Rank command:** merged in PR #35; CI run #215 passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
+- **Top command:** in progress on branch `feat/top-command`; bounded query, deterministic ordering and chat isolation are covered by new unit/SQLite integration tests. CI pending.
 
 ## Current backlog
 
-- [ ] **`/rank`:** review and merge PR #35 after explicit approval.
-- [ ] **`/top`:** implement as a separate feature branch after `/rank` is accepted.
+- [ ] **`/top`:** finish implementation, verify CI and review PR before merge.
 - [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
-
 ## Evidence rules
 
 1. A task is **Done** only with concrete evidence: tests, CI, a merged commit, or an explicit architectural decision.
