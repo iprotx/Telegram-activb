@@ -121,7 +121,7 @@ class ActivityRepository:
             .limit(limit)
         )
         result = await self._session.execute(statement)
-        return [(cast(ChatMember, member), cast(User, user)) for member, user in result.all()]
+        return [(member, user) for member, user in result.all()]
 
     async def _get_or_create_chat(self, telegram_id: int, title: str | None) -> Chat:
         result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))
