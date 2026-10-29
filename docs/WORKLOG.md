@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-29 — Stage 3: catalog persistence and storefront data flow
+
+- **Goal:** move the Mini App from an empty shell to server-controlled catalog data while keeping LittleFox behind the Python boundary.
+- **Changed:** added the `products` model and migration, product repository, LittleFox catalog client, authenticated `/api/v1/products` and `/api/v1/products/{id}` endpoints, typed frontend catalog client and product-card states.
+- **Provider boundary:** LittleFox credentials remain server-side. The frontend receives KEYDROP product data only; it never calls LittleFox directly.
+- **Data rule:** provider price/availability are stored in KEYDROP and refreshed from the provider when the catalog endpoint is used. The backend remains authoritative for what the frontend can display.
+- **Tests:** added backend catalog endpoint coverage and frontend catalog client coverage.
+- **Verification status:** implementation is committed to the PR branch; GitHub CI verification is still required. Local dependency execution is unavailable in the current environment.
+- **Next:** complete catalog/product UX, then move to favorites and cart foundations before checkout.
+
 ## 2026-10-29 — Stage 2: Python HTTP API + Telegram authentication foundation
 
 - **Goal:** establish the trusted server-side identity boundary between the KEYDROP Mini App and the existing Python/PostgreSQL backend.
@@ -8,7 +18,7 @@
 - **Tests:** added TDD coverage for valid signatures, invalid signatures, expired data, invalid user payloads and authenticated customer bootstrap.
 - **Security:** the API accepts raw Telegram init data through `Authorization: tma <initData>`, validates it server-side, and only then resolves/updates the customer. LittleFox and database access remain server-side.
 - **Verification status:** implementation is committed to the PR branch; GitHub CI verification is still required before declaring the stage complete.
-- **Next:** finish CI verification, then implement Stage 3 catalog/product endpoints and storefront data flow.
+- **Next:** finish CI verification, then implement catalog/product endpoints and storefront data flow.
 
 ## 2026-10-29 — Stage 1: React + TypeScript + Vite Mini App foundation
 
