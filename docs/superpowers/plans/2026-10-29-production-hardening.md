@@ -10,6 +10,27 @@
 
 **Spec:** `AGENTS.md`, `skills/ub-mode/SKILL.md`, `skills/python-aiogram-coder/SKILL.md`, and the approved production-foundation design. The repository already has the foundation and an open PR; this plan hardens that foundation rather than replacing it.
 
+## Reconciliation — 2026-10-29
+
+The unchecked boxes below describe the original execution protocol. They are not evidence of the current state. The current verified status is maintained in `docs/PROJECT_STATUS.md` and is reconciled against source, tests, merged PRs and CI evidence.
+
+| Iteration | Current status | Evidence / remaining work |
+| --- | --- | --- |
+| 0 | Done | Documentation baseline and local-skill references were established by PR #17. |
+| 1 | Done | User profile synchronization was implemented and covered by tests. |
+| 2 | Done | `/start` behavior is covered for normal and partially populated Telegram profiles. |
+| 3 | Done | Middleware commit/rollback behavior is covered, including PostgreSQL rollback integration. |
+| 4 | Done | PostgreSQL uniqueness/nullable-field verification was merged in PR #25; Alembic checks are in CI. |
+| 5 | Not started | Dedicated error-boundary/safe-logging regression tests remain; see #13. |
+| 6 | In progress | Configuration validation is covered; dedicated startup/import-side-effect coverage remains; see #14. |
+| 7 | Done | PostgreSQL concurrent `get_or_create` coverage was merged in PR #25. |
+| 8 | Not started | Docker image build is covered, but runtime startup smoke is not yet verified; see #16. |
+| 9 | Done | CI currently runs formatting, lint, mypy, migrations, tests, PostgreSQL integration tests, Alembic drift, dependency audit and Docker build. |
+| 10 | In progress | PR #21 fixed the known activity dependency violation; final whole-branch review is still required. |
+| 11 | Not started | Final release-readiness verification follows the remaining engineering gaps and architecture review. |
+
+**Backlog reconciliation:** issue #18 still describes the dependency violation fixed by merged PR #21 and is stale. It should be closed/updated as backlog maintenance; no new production change is required for that issue.
+
 ## Global Constraints
 
 - One coherent iteration produces one independently reviewable result.
@@ -153,7 +174,7 @@ Every iteration follows this exact sequence:
 - [ ] Review configuration for secret exposure and unnecessary global state.
 - [ ] Commit exactly once: `fix: harden application configuration`.
 
-**Exit condition:** invalid configuration fails early and clearly; secrets do not appear in normal logs/errors; imports are side-effect free.
+**Exit condition:** invalid configuration fails early and clearly; secrets do not appear in normal logs/errors; imports are side-effect free on import.
 
 ### Iteration 7: Repository concurrency and idempotence
 
