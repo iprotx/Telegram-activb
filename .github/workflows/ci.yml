@@ -48,7 +48,9 @@ jobs:
       - name: Alembic migrations
         run: alembic upgrade head
       - name: Tests
-        run: pytest -q
+        run: pytest -q -m "not postgres"
+      - name: PostgreSQL integration tests
+        run: pytest -q -m postgres
       - name: Alembic check
         run: alembic check
       - name: Dependency audit
