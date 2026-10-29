@@ -6,6 +6,12 @@ _Last updated: 2026-10-29_
 
 Deliver a testable Telegram Mini App where a real Telegram user can open KEYDROP, authenticate, browse the catalog, inspect a product, create a cart, complete a server-confirmed purchase through LittleFox, see the resulting order and receive the delivered digital goods. The MVP must also establish the foundation for owned customer relationships and referrals.
 
+## Current implementation status
+
+- Stage 0 — documentation and architecture: **implemented in PR #38; not merged**.
+- Stage 1 — React + TypeScript + Vite Mini App foundation: **implemented in PR #38; CI verification pending**.
+- Stage 2+ — backend API, catalog integration, checkout, orders, notifications, referrals and deployment: **not started**.
+
 ## MVP definition
 
 ### Must work
@@ -44,7 +50,7 @@ These remain post-MVP capabilities unless a later product decision promotes one 
 
 ### Stage 0 — Documentation and architecture
 
-**Status:** in progress.
+**Status:** implemented in PR #38; not merged.
 
 - align repository documentation with KEYDROP product model;
 - define one-repository layout;
@@ -57,13 +63,15 @@ These remain post-MVP capabilities unless a later product decision promotes one 
 
 ### Stage 1 — Frontend foundation
 
-- create `frontend/` React + TypeScript + Vite application;
-- add Telegram Mini App SDK/UI integration using current supported versions;
-- implement AppShell, theme handling, safe-area/viewport behavior and navigation;
-- create typed API client boundary;
-- establish loading/error/empty states.
+**Status:** implemented in PR #38; CI verification pending.
 
-**Exit:** Mini App shell opens in Telegram and can authenticate against a development backend.
+- create `frontend/` React + TypeScript + Vite application;
+- add Telegram Mini App SDK integration using current supported versions;
+- implement AppShell, theme handling, safe-area/viewport behavior and navigation shell;
+- create typed API client boundary;
+- establish loading/error/empty-state foundations.
+
+**Exit:** Mini App shell exists, initializes the Telegram SDK, supports browser mocking, and has frontend typecheck/test/build checks in CI.
 
 ### Stage 2 — Backend API foundation
 
