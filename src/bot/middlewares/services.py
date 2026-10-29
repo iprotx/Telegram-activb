@@ -5,7 +5,9 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from bot.repositories.activity import ActivityRepository
 from bot.repositories.users import UserRepository
+from bot.services.activity_tracking import ActivityService
 from bot.services.users import UserService
 
 
@@ -21,5 +23,6 @@ class ServicesMiddleware(BaseMiddleware):
     ) -> Any:
         async with self._session_factory() as session:
             data["user_service"] = UserService(UserRepository(session))
+            data["activity_service"] = ActivityService(ActivityRepository(session))
             async with session.begin():
                 return await handler(event, data)
