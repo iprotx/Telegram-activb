@@ -13,4 +13,4 @@ COPY alembic ./alembic
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .
 
-CMD ["python", "-m", "bot.main"]
+CMD ["sh", "-c", "alembic upgrade head && exec python -m bot.main"]
