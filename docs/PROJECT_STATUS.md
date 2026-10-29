@@ -5,9 +5,9 @@ _Last reconciled: 2026-10-29_
 ## Current snapshot
 
 - **Default branch:** `main`
-- **Latest merged work:** PR #35 added `/rank`; merge commit [1a29867](https://github.com/iprotx/Telegram-activb/commit/1a29867759a338c15dfddcce075d87bbc09bd4c6).
+- **Latest merged work:** PR #36 added `/top`; merge commit [f4ee96d](https://github.com/iprotx/Telegram-activb/commit/f4ee96db00e973af56196a202287d2df5268a243).
 - **Current product shape:** aiogram bot with user registration, per-chat activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Latest product feature:** `/rank` merged in PR #35 ([merge commit](https://github.com/iprotx/Telegram-activb/commit/1a29867759a338c15dfddcce075d87bbc09bd4c6)); implementation CI run [#215](https://github.com/iprotx/Telegram-activb/actions/runs/40892928139) passed all configured checks.
+- **Latest product feature:** `/top` merged in PR #36 ([merge commit](https://github.com/iprotx/Telegram-activb/commit/f4ee96db00e973af56196a202287d2df5268a243)); CI run [#242](https://github.com/iprotx/Telegram-activb/actions/runs/40894363840) passed all configured checks.
 
 ## Architecture and constraints
 
@@ -27,11 +27,11 @@ _Last reconciled: 2026-10-29_
 - **Docker runtime smoke and migration validation:** PR #30.
 - **Transaction boundaries:** PR #34 documented why the existing update-level transaction is retained; issue #32 investigation completed.
 - **Rank command:** merged in PR #35; CI run #215 passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
-- **Top command:** implemented on branch `feat/top-command`; CI run [#239](https://github.com/iprotx/Telegram-activb/actions/runs/40894068220) passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
+- **Top command:** merged in PR #36; CI run [#242](https://github.com/iprotx/Telegram-activb/actions/runs/40894363840) passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
 
 ## Current backlog
 
-- [ ] **`/top`:** finish implementation, verify CI and review PR before merge.
+- [ ] **Welcome message:** verify CI and review PR for automatic group-join greetings.
 - [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
 
 ## Evidence rules

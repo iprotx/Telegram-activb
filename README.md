@@ -288,7 +288,7 @@ After the bot starts successfully:
 3. Send `/start` in the chat.
 4. Check the container/process logs for startup errors.
 
-For group activity tracking, remember that Telegram bot privacy settings affect which group messages a bot receives. If a feature depends on ordinary group messages, review the bot's privacy mode in BotFather and the permissions of the bot in the target group.
+When a user joins a group or supergroup, the bot sends a short welcome message. Telegram only delivers `chat_member` updates when the bot is an administrator in that chat. For group activity tracking, remember that Telegram bot privacy settings affect which group messages a bot receives. If a feature depends on ordinary group messages, review the bot's privacy mode in BotFather and the permissions of the bot in the target group.
 
 ## Bot commands
 
