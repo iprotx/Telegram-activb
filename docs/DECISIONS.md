@@ -1,5 +1,13 @@
 # Decision Log
 
+## 2026-10-29 — Keep chat features deterministic and non-AI
+
+**Context:** The product direction is to study existing Telegram group bots for activity, moderation, and admin utilities without adding AI behavior to this bot.
+
+**Decision:** Product features must use explicit rules, thresholds, configured templates, and auditable commands. Do not add LLM/model calls, embeddings, AI classifiers, prompt-based decisions, or third-party AI services.
+
+**Consequences:** Candidate features must be explainable and testable with deterministic unit/integration tests. The research plan may cite products that also offer AI, but only their documented non-AI capabilities are in scope.
+
 Record durable decisions that affect architecture, delivery, or operational behavior. Add new entries at the top with date, context, decision, and consequences.
 
 ## 2026-10-29 — Keep project status separate from detailed implementation plan
