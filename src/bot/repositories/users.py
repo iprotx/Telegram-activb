@@ -12,6 +12,8 @@ class UserRepository:
         result = await self._session.execute(select(User).where(User.telegram_id == telegram_id))
         user = result.scalar_one_or_none()
         if user is not None:
+            if user.username != username:
+                user.username = username
             return user
 
         user = User(telegram_id=telegram_id, username=username)
