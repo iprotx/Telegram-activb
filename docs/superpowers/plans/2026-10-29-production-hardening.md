@@ -224,32 +224,6 @@ Every iteration follows this exact sequence:
 
 **Exit condition:** all applicable checks have evidence, unresolved failures are fixed or explicitly documented, and the PR is ready for human merge approval.
 
-
-## Evidence-backed status audit — 2026-10-29
-
-This table is the current source of truth for iteration status. The unchecked steps below are the original execution checklist; they are **not** proof that an iteration is still undone. Historical TDD actions are not retrospectively marked complete unless their evidence is available. Reconcile this table whenever code, tests, or CI change.
-
-| Iteration | Status | Evidence / remaining work |
-|---|---|---|
-| 0. Documentation baseline | **Done** | README, project status, work log and engineering rules were aligned in [PR #12](https://github.com/iprotx/Telegram-activb/pull/12); CI passed in [run 40846301942](https://github.com/iprotx/Telegram-activb/actions/runs/40846301942). The original plan's one-commit instruction was not followed for this docs batch; no production code changed. |
-| 1. User profile synchronization | **Done** | src/bot/repositories/users.py synchronizes username/first/last name; tests/unit/test_user_repository_unit.py, tests/unit/test_user_service.py, and tests/integration/test_user_repository.py cover profile convergence and stable identity. Latest main CI passed. |
-| 2. /start behavior | **Done** | tests/unit/test_start_handler.py covers complete and missing optional profile fields and the response. Latest main CI passed. |
-| 3. Middleware transactions | **Done** | tests/unit/test_services_middleware.py covers commit and rollback/re-raise; tests/integration/test_services_middleware_transaction.py covers rollback against the PostgreSQL CI service. Latest main CI passed. |
-| 4. User schema/migration | **Partial** | User.telegram_id is unique and profile columns are nullable in src/bot/db/models/user.py and alembic/versions/0001_initial.py; CI runs alembic upgrade head and alembic check on PostgreSQL. Dedicated tests/integration/test_user_schema.py is absent. SQLite migration compatibility and Alembic/runtime URL parity are unverified: env.py reads only the process environment, while the application loads .env through Settings; migrations 0003/0004 may also require SQLite batch handling. Track in [#15](https://github.com/iprotx/Telegram-activb/issues/15) and [#20](https://github.com/iprotx/Telegram-activb/issues/20). |
-| 5. Error boundary/logging | **Partial** | src/bot/middlewares/errors.py logs exceptions and re-raises them. Dedicated tests for propagation and sensitive-data-safe logging are absent. Track in [issue #13](https://github.com/iprotx/Telegram-activb/issues/13). |
-| 6. Configuration/startup | **Partial** | tests/unit/test_config.py covers required token, async DB driver, and log levels. src/bot/main.py has a __main__ guard, but tests/unit/test_main.py is absent. Track in [issue #14](https://github.com/iprotx/Telegram-activb/issues/14). |
-| 7. Registration concurrency | **Partial** | tests/integration/test_user_repository.py tests concurrent registration against temporary SQLite and verifies one row/stable identity. PostgreSQL-specific duplicate-registration behavior is not covered. Track in [issue #15](https://github.com/iprotx/Telegram-activb/issues/15). |
-| 8. Docker runtime smoke | **Partial** | CI builds the Docker image; there is no runtime startup/shutdown smoke test or clean-deployment verification. Track in [issue #16](https://github.com/iprotx/Telegram-activb/issues/16). |
-| 9. CI quality gates | **Done** | .github/workflows/ci.yml runs Ruff format/lint, mypy, Alembic upgrade/check, pytest, pip-audit and Docker build. [Main CI run 40846550635](https://github.com/iprotx/Telegram-activb/actions/runs/40846550635) passed. Optional ub-mode tools are separate and not claimed as run. |
-| 10. Whole-branch architecture review | **In progress** | Review of application wiring and core handlers/services/repositories/models found a confirmed dependency inversion: src/bot/repositories/activity.py imports ActivityPolicy and level_for_xp from bot.services.activity and owns XP/level decisions. Tracked in [issue #18](https://github.com/iprotx/Telegram-activb/issues/18). The remaining full commit-range review is not complete; no architectural sign-off yet. |
-| 11. Final verification/release readiness | **Partial** | Main CI is green, but whole-branch review, runtime smoke, and the missing focused tests above remain. Green CI alone is not a production-readiness claim. |
-
-### Audit scope and limits
-
-- Evidence reviewed: current main tree, key repository/service/handler/middleware/configuration files, available unit/integration tests, Alembic model/migration, Docker files, CI workflow, project skills, and the successful main CI run linked above.
-- The audit is repository/CI evidence only. No live Telegram bot or deployed environment was exercised.
-- Items marked **Partial** are separate bounded backlog tasks; avoid mixing their code changes into this documentation audit.
-
 ## Debugging Protocol
 
 When any test, CI job, migration, or runtime check fails:
