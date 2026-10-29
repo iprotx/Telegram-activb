@@ -25,7 +25,7 @@ _Last reconciled: 2026-10-29_
 | 2. `/start` behavior | Done | Dedicated handler tests cover normal users and missing optional profile fields. |
 | 3. Middleware transaction boundaries | Done | Commit/rollback behavior is covered, including PostgreSQL rollback integration coverage. |
 | 4. User schema/migrations | Done | PR #25 verifies PostgreSQL uniqueness and nullable profile fields; Alembic checks are part of CI. |
-| 5. Error boundary and safe logging | Not started | `src/bot/middlewares/errors.py` exists, but dedicated regression tests are still missing. See #13. |
+| 5. Error boundary and safe logging | In review | PR #28 adds tests for re-raise, diagnostic context/traceback, and exclusion of token/update sentinels from logs; CI run `40868768340` passed. Merge pending. |
 | 6. Configuration and startup validation | In progress | Configuration validation is covered; a dedicated import/startup test is still missing. See #14. |
 | 7. User repository concurrency/idempotence | Done | PR #25 adds dedicated PostgreSQL concurrency coverage for `get_or_create`. |
 | 8. Docker runtime smoke path | Not started | CI builds the image, but there is no verified container startup smoke test. See #16. |

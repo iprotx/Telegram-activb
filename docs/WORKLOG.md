@@ -21,6 +21,15 @@
 - **Verification:** repository state and historical PR/CI evidence were checked before assigning statuses; no production code changed.
 - **Next:** finish the documentation reconciliation, verify its CI, then take the first remaining engineering gap (#13) as a bounded code-changing iteration.
 
+## 2026-10-29 — Error middleware safe-logging regression tests
+
+- **Goal:** cover issue #13's observable error middleware contract without changing production behavior.
+- **Changed:** added `tests/unit/test_error_middleware.py` with two tests: one checks the original exception is re-raised and logged with the expected message/traceback; the other checks a synthetic token and serialized update payload passed through the event/context are not logged.
+- **Production code:** unchanged; the current middleware satisfies these behaviors in the regression tests.
+- **Verification:** CI run [40868768340](https://github.com/iprotx/Telegram-activb/actions/runs/40868768340) passed Ruff format/lint, mypy, Alembic migration/check, both general and PostgreSQL pytest suites, dependency audit, and Docker build.
+- **Review state:** PR #28 is open; no merge performed. Status is **In review**, not Done until the change is integrated.
+- **Next:** after PR #28 is reviewed and merged, take issue #14 (startup/import-side-effect coverage).
+
 ## 2026-10-29 — PostgreSQL user repository verification
 
 - **Goal:** verify the `users` uniqueness constraint, nullable profile fields, and concurrent registration on the same PostgreSQL engine used by CI.
