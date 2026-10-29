@@ -11,6 +11,7 @@ from bot.api.auth.telegram import TelegramAuthError, TelegramInitData, validate_
 from bot.config import Settings
 from bot.db.models import Product
 from bot.integrations.littlefox import LittleFoxClient, LittleFoxError
+from bot.repositories.favorites import FavoriteRepository
 from bot.repositories.products import ProductRepository
 from bot.repositories.users import UserRepository
 
@@ -24,7 +25,7 @@ def create_api_app(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=False,
-        allow_methods=["GET"],
+        allow_methods=["GET", "PUT", "DELETE"],
         allow_headers=["Authorization", "Content-Type"],
     )
 
@@ -61,6 +62,16 @@ def create_api_app(
         if not settings.littlefox_api_key_value:
             return None
         return LittleFoxClient(settings.littlefox_base_url, settings.littlefox_api_key_value)
+
+    async def get_customer_id(telegram: TelegramInitData, session: AsyncSession) -> int:
+        user = telegram.user
+        customer = await UserRepository(session).get_or_create(
+            telegram_id=user.user_id,
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name,
+        )
+        return customer.id
 
     @app.get("/api/v1/health")
     async def health() -> dict[str, str]:
@@ -129,6 +140,42 @@ def create_api_app(
                 detail={"code": "not_found", "message": "Product not found"},
             )
         return serialize_product(product)
+
+    @app.get("/api/v1/favorites")
+    async def favorites(
+        telegram: Annotated[TelegramInitData, Depends(get_telegram_user)],
+        session: Annotated[AsyncSession, Depends(get_session)],
+    ) -> dict[str, list[int]]:
+        customer_id = await get_customer_id(telegram, session)
+        return {"product_ids": await FavoriteRepository(session).list_product_ids(customer_id)}
+
+    @app.put("/api/v1/favorites/{product_id}")
+    async def add_favorite(
+        product_id: int,
+        telegram: Annotated[TelegramInitData, Depends(get_telegram_user)],
+        session: Annotated[AsyncSession, Depends(get_session)],
+    ) -> dict[str, bool]:
+        customer_id = await get_customer_id(telegram, session)
+        try:
+            await FavoriteRepository(session).add(customer_id, product_id)
+        except LookupError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"code": "not_found", "message": "Product not found"},
+            ) from exc
+        await session.commit()
+        return {"favorite": True}
+
+    @app.delete("/api/v1/favorites/{product_id}")
+    async def remove_favorite(
+        product_id: int,
+        telegram: Annotated[TelegramInitData, Depends(get_telegram_user)],
+        session: Annotated[AsyncSession, Depends(get_session)],
+    ) -> dict[str, bool]:
+        customer_id = await get_customer_id(telegram, session)
+        await FavoriteRepository(session).remove(customer_id, product_id)
+        await session.commit()
+        return {"favorite": False}
 
     return app
 
