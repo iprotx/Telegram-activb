@@ -5,7 +5,6 @@ from aiogram.types import Update
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from bot.db.base import Base
 from bot.db.models import User
 from bot.middlewares.services import ServicesMiddleware
 
@@ -21,9 +20,6 @@ async def test_services_middleware_rolls_back_failed_handler() -> None:
 
     engine = create_async_engine(database_url)
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
-
-    async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
 
     async def handler(event: Update, data: dict[str, object]) -> None:
         service = data["user_service"]
