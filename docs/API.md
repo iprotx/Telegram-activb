@@ -13,13 +13,33 @@ This document defines the internal API boundary between the React Mini App and t
 - Purchase state is owned by KEYDROP, not by the client.
 - Responses expose KEYDROP concepts rather than LittleFox-specific internals where practical.
 
+## Authentication
+
+The Mini App sends raw Telegram initialization data in the `Authorization` header:
+
+```text
+Authorization: tma <raw Telegram initData>
+```
+
+The backend validates the signature with the bot token, validates `auth_date`, parses the Telegram user payload and only then resolves the KEYDROP customer. The client must not use `initDataUnsafe` as an authentication source.
+
+The current API accepts initialization data for up to one hour by default. This value is configurable server-side with `TELEGRAM_INIT_DATA_MAX_AGE`.
+
 ## MVP endpoints
+
+### Health
+
+`GET /api/v1/health`
+
+Returns a minimal process health response and does not require Telegram authentication.
 
 ### Customer
 
 `GET /api/v1/me`
 
 Returns the authenticated KEYDROP customer and essential notification preferences.
+
+The first authenticated request creates the local customer if the Telegram account is not already present. Subsequent requests synchronize the Telegram profile fields through the existing user repository.
 
 ### Catalog
 
