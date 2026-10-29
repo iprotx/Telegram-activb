@@ -57,11 +57,7 @@ class ActivityService:
             last_awarded_at=member.last_xp_at,
             now=now,
         )
-        new_level = (
-            level_for_xp(member.xp + xp_awarded)
-            if xp_awarded
-            else member.level
-        )
+        new_level = level_for_xp(member.xp + xp_awarded) if xp_awarded else member.level
         return await self._repository.record_message(
             member=member,
             message_id=message_id,
