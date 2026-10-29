@@ -16,6 +16,6 @@ class UserRepository:
 
         user = User(telegram_id=telegram_id, username=username)
         self._session.add(user)
-        await self._session.commit()
+        await self._session.flush()
         await self._session.refresh(user)
         return user
