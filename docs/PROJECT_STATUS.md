@@ -9,6 +9,13 @@ _Last reconciled: 2026-10-29_
 - **Latest merged work:** PostgreSQL integration verification for user uniqueness, nullable profile fields, and concurrent registration.
 - **Current product shape:** production-oriented aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose and CI quality gates.
 
+## Product feature research
+
+- **Direction:** evaluate activity/XP, chat moderation, and admin utilities using deterministic rules only; no AI/LLM/model integration or external AI service.
+- **Plan:** [Non-AI chat bot feature research](superpowers/plans/2026-10-29-chat-bot-feature-research.md).
+- **Status:** comparison research and prioritization are planned; no candidate feature has been approved or implemented by this research.
+- **Engineering order:** retain the current reliability backlog (#13, #14, #16), then whole-branch architecture review and release-readiness verification before expanding runtime scope.
+
 ## Reconciled hardening status
 
 | Iteration | Status | Evidence / result |
