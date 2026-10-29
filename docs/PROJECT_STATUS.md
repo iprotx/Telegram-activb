@@ -4,55 +4,49 @@ _Last reconciled: 2026-10-29_
 
 ## Current snapshot
 
-- **Default branch:** main
-- **Latest merged change:** PR #10, `fix: harden activity timestamp and concurrency handling`
-- **Latest merged commit:** `ad20f34c46db52e8d1da9b5a5eba8d83d33cf008`
-- **CI evidence for PR #10:** [run 40845554427](https://github.com/iprotx/Telegram-activb/actions/runs/40845554427) — success.
+- **Default branch:** `main`
+- **Current main HEAD:** `1c5bb9f7ac936fd999e741d38cfd07366a7ac405` — merge of PR #25.
+- **Latest merged work:** PostgreSQL integration verification for user uniqueness, nullable profile fields, and concurrent registration.
 - **Current product shape:** production-oriented aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose and CI quality gates.
 
-## Recently completed
+## Reconciled hardening status
 
-- [x] Merge PR #8: activity levels and database migration conflict resolution.
-- [x] Merge PR #10: normalize activity timestamps to UTC, use timezone-aware `last_xp_at`, handle concurrent first-message creation, and add activity repository integration tests.
-- [x] Verify PR #10 CI passed: Ruff format/lint, mypy, tests, Alembic checks, dependency audit and Docker build were green in the completed workflow.
-- [x] Preserve architecture boundaries documented in `AGENTS.md`: handlers → services → repositories → database infrastructure.
+| Iteration | Status | Evidence / result |
+| --- | --- | --- |
+| 0. Baseline and documentation consistency | Done | PR #17 established the maintained project-management documentation and reconciled README/local skill references. |
+| 1. User profile synchronization | Done | Implemented and covered by tests; repeated registration preserves identity and updates Telegram profile fields. |
+| 2. `/start` behavior | Done | Dedicated handler tests cover normal users and missing optional profile fields. |
+| 3. Middleware transaction boundaries | Done | Commit/rollback behavior is covered, including PostgreSQL rollback integration coverage. |
+| 4. User schema/migrations | Done | PR #25 verifies PostgreSQL uniqueness and nullable profile fields; Alembic checks are part of CI. |
+| 5. Error boundary and safe logging | Not started | `src/bot/middlewares/errors.py` exists, but dedicated regression tests are still missing. See #13. |
+| 6. Configuration and startup validation | In progress | Configuration validation is covered; a dedicated import/startup test is still missing. See #14. |
+| 7. User repository concurrency/idempotence | Done | PR #25 adds dedicated PostgreSQL concurrency coverage for `get_or_create`. |
+| 8. Docker runtime smoke path | Not started | CI builds the image, but there is no verified container startup smoke test. See #16. |
+| 9. CI quality gate hardening | Done | Current CI covers formatting, lint, mypy, migrations, tests, PostgreSQL integration tests, Alembic drift, dependency audit and Docker build. |
+| 10. Whole-branch architecture review | In progress | PR #21 fixed the known activity repository → service dependency violation. A final whole-branch review after the latest database/CI changes is still required. |
+| 11. Final verification and merge readiness | Not started | Requires the remaining gaps and final architecture review to be resolved first. |
 
-## In progress
+## Confirmed remaining backlog
 
-- [ ] Establish a maintained project-management layer: status, roadmap, decision log, and work log. This PR creates the initial baseline; review it against the existing implementation plan before treating all roadmap entries as current truth.
+### P1 — Production-hardening gaps
 
-## Prioritized backlog
-
-These are engineering follow-ups drawn from the existing production-hardening plan in `docs/superpowers/plans/2026-10-29-production-hardening.md`. The plan has older unchecked boxes and must be reconciled against current code before work is claimed complete.
-
-### P0 — Reconcile the implementation plan
-
-- [ ] Audit each plan iteration against current source, tests, migrations, and CI evidence.
-- [ ] Update stale checkboxes and obsolete descriptions; do not infer completion from a file merely existing.
-- [ ] Convert confirmed remaining work into bounded GitHub issues or explicit roadmap tasks with acceptance criteria.
-
-**Acceptance:** every plan iteration has one of: Done (with evidence), In progress, Blocked (with reason), or Not started.
-
-### P1 — Close remaining production-hardening gaps
-
-Candidate work items from the existing plan; status intentionally remains unverified until the P0 audit:
-
-- [ ] User profile synchronization on repeated registration.
-- [ ] Explicit `/start` behavior coverage, including missing optional profile fields.
-- [ ] Middleware transaction commit/rollback tests.
-- [ ] User schema/constraint integration coverage and clean-database migration verification.
-- [ ] Error-boundary tests and safe logging review.
-- [ ] Configuration/startup validation and import-side-effect tests.
-- [ ] User repository duplicate-registration concurrency test.
-- [ ] Docker runtime smoke test, beyond image build.
-- [ ] Verify CI gates match contributor documentation.
-- [ ] Whole-branch architecture/security review.
+- [ ] **#13 — Error boundary and safe logging.** Add focused tests for exception re-raise, useful diagnostic context, and absence of bot tokens/full Telegram payloads in logs.
+- [ ] **#14 — Configuration/startup verification.** Add startup/import-side-effect coverage and confirm safe failure behavior for invalid configuration.
+- [ ] **#16 — Docker runtime smoke.** Verify the documented container path actually starts with declared environment/configuration rather than only building successfully.
+- [ ] **#18 — Architecture refactor.** The implementation is already merged in PR #21; the issue itself is now stale and should be closed/updated after this reconciliation.
 
 ### P2 — Release readiness
 
 - [ ] Define the intended first release scope and operator acceptance criteria.
 - [ ] Verify clean deployment from documented setup with required environment variables and a fresh database.
-- [ ] Record any remaining operational limitations before calling the bot production-ready.
+- [ ] Record remaining operational limitations before calling the bot production-ready.
+
+## Evidence rules
+
+1. A task is **Done** only when the repository contains concrete evidence: tests, CI, a merged commit, or an explicit architectural decision.
+2. `PROJECT_STATUS.md` is the current human-readable snapshot; the detailed implementation plan remains the execution protocol and must not be treated as evidence by itself.
+3. CI green means the configured checks passed; it does not by itself prove deployment or production readiness.
+4. Merge and deployment remain explicit human decisions.
 
 ## Working agreements
 
@@ -69,4 +63,4 @@ Candidate work items from the existing plan; status intentionally remains unveri
 - [Engineering rules](../AGENTS.md)
 - [Production-hardening implementation plan](superpowers/plans/2026-10-29-production-hardening.md)
 - [Decision log](DECISIONS.md)
-- [Work log](WORKLOG.md)
+- [Worklog](WORKLOG.md)
