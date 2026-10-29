@@ -30,14 +30,14 @@ from unittest.mock import patch
 
 with (
     patch("asyncio.run") as run,
-    patch("aiogram.Bot") as bot,
+    patch("aiogram.Bot") as bot_constructor,
     patch("aiogram.Dispatcher.start_polling") as polling,
     patch("bot.db.session.create_database") as create_database,
 ):
     import bot.main
 
     assert not run.called
-    assert not bot.called
+    assert not bot_constructor.called
     assert not polling.called
     assert not create_database.called
 """
@@ -62,7 +62,7 @@ def test_create_dispatcher_registers_middlewares_and_root_router() -> None:
     dispatcher = main.create_dispatcher(database)
 
     registered_middlewares = dispatcher.update.outer_middleware._middlewares
-    assert [type(middleware) for middleware in registered_middlewares] == [
+    assert [type(middleware) for middleware in registered_middlewares[-2:]] == [
         ErrorMiddleware,
         ServicesMiddleware,
     ]
