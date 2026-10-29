@@ -1,5 +1,16 @@
 # Work Log
 
+## 2026-10-29 — Production-hardening plan audit
+
+- **Goal:** replace stale unchecked plan boxes with an evidence-backed view of shipped work and real remaining gaps.
+- **Reviewed:** current main tree; user repository/service, /start handler, transaction/error middleware, config/startup wiring, user model and migration, integration/unit tests, Docker files, CI workflow, project skills, and latest main CI.
+- **Verified complete:** user profile synchronization; /start behavior; middleware commit/rollback coverage; current CI quality gates. Main CI run [40846550635](https://github.com/iprotx/Telegram-activb/actions/runs/40846550635) passed.
+- **Partial gaps confirmed:** dedicated user schema test; error middleware safe-logging tests; main import/startup tests; PostgreSQL-backed concurrent user registration test; Docker runtime smoke/clean deployment test.
+- **Issues created:** [#13 error middleware](https://github.com/iprotx/Telegram-activb/issues/13), [#14 startup safety](https://github.com/iprotx/Telegram-activb/issues/14), [#15 schema and PostgreSQL concurrency](https://github.com/iprotx/Telegram-activb/issues/15), [#16 Docker runtime smoke/release review](https://github.com/iprotx/Telegram-activb/issues/16).
+- **Changed in this stage:** added an evidence-backed iteration status table to the detailed plan and refreshed the project status page on branch `docs/reconcile-hardening-plan`.
+- **Not verified:** no live Telegram bot or deployed environment was exercised; a green CI run is not a production-readiness sign-off. Full whole-branch architecture review is still pending.
+- **Next:** open a documentation-only PR, verify its CI, then continue with the whole-branch architecture review as a separate stage.
+
 ## 2026-10-29 — Project management baseline
 
 - **Goal:** make project status, priorities, decisions, and progress traceable across tasks.
