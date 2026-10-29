@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-29 — Non-AI chat bot feature research plan
+
+- **Goal:** define an evidence-backed process for studying comparable Telegram group bots and selecting deterministic activity, moderation, and admin features.
+- **Scope:** documentation/research plan only; no runtime behavior or dependencies changed.
+- **Compared official references:** Combot's non-AI analytics/XP/moderation capabilities, Rose's rules-based moderation docs, Group Help's group-protection overview, and Telegram's Bot API/FAQ for message visibility and permissions.
+- **No-AI constraint:** exclude AI/LLM/model calls, AI classifiers, and external AI services from product candidates.
+- **Changed:** added `docs/superpowers/plans/2026-10-29-chat-bot-feature-research.md`; linked it from `docs/PROJECT_STATUS.md`; recorded the durable product constraint in `docs/DECISIONS.md`.
+- **Verification:** repository docs/source and open hardening issues were inspected; official reference pages were reviewed. No application code or tests changed, so code quality checks were not run for this documentation-only change.
+- **Next:** continue the agreed reliability sequence with #13; use the research process to shortlist product features after the foundation gaps are addressed.
+
 ## 2026-10-29 — Production-hardening status reconciliation
 
 - **Goal:** reconcile the detailed hardening plan with the current `main` after PR #25 and replace the stale pre-PR status snapshot with evidence-backed states.
