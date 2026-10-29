@@ -21,8 +21,8 @@ The unchecked boxes below describe the original execution protocol. They are not
 | 2 | Done | `/start` behavior is covered for normal and partially populated Telegram profiles. |
 | 3 | Done | Middleware commit/rollback behavior is covered, including PostgreSQL rollback integration. |
 | 4 | Done | PostgreSQL uniqueness/nullable-field verification was merged in PR #25; Alembic checks are in CI. |
-| 5 | Not started | Dedicated error-boundary/safe-logging regression tests remain; see #13. |
-| 6 | In progress | Configuration validation is covered; dedicated startup/import-side-effect coverage remains; see #14. |
+| 5 | Done | PR #28 merged as `5eb3b3d02453bf98af3c8c3aa2d95c6c4e9ddcad`; issue #13 closed; CI run `40868768340` passed the regression-test quality gates. |
+| 6 | In review | PR #29 adds import-side-effect, dispatcher wiring, and resource-cleanup tests; CI pending. |
 | 7 | Done | PostgreSQL concurrent `get_or_create` coverage was merged in PR #25. |
 | 8 | Not started | Docker image build is covered, but runtime startup smoke is not yet verified; see #16. |
 | 9 | Done | CI currently runs formatting, lint, mypy, migrations, tests, PostgreSQL integration tests, Alembic drift, dependency audit and Docker build. |
