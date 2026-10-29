@@ -47,8 +47,23 @@ def upgrade() -> None:
     op.create_index("ix_chat_members_chat_id", "chat_members", ["chat_id"], unique=False)
     op.create_index("ix_chat_members_user_id", "chat_members", ["user_id"], unique=False)
 
+    op.create_table(
+        "activity_events",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("chat_member_id", sa.Integer(), nullable=False),
+        sa.Column("telegram_message_id", sa.Integer(), nullable=False),
+        sa.Column("xp_awarded", sa.Integer(), server_default="0", nullable=False),
+        sa.Column("created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False),
+        sa.ForeignKeyConstraint(["chat_member_id"], ["chat_members.id"], ondelete="CASCADE"),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("chat_member_id", "telegram_message_id", name="uq_activity_message"),
+    )
+    op.create_index("ix_activity_events_chat_member_id", "activity_events", ["chat_member_id"], unique=False)
+
 
 def downgrade() -> None:
+    op.drop_index("ix_activity_events_chat_member_id", table_name="activity_events")
+    op.drop_table("activity_events")
     op.drop_index("ix_chat_members_user_id", table_name="chat_members")
     op.drop_index("ix_chat_members_chat_id", table_name="chat_members")
     op.drop_table("chat_members")
