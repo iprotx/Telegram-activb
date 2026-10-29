@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-29 — Stage 1: React + TypeScript + Vite Mini App foundation
+
+- **Goal:** establish the first runnable KEYDROP Mini App foundation without coupling the frontend to PostgreSQL or LittleFox.
+- **Changed:** added the `frontend/` Vite + React + TypeScript application shell, Telegram SDK initialization with browser mocking, Telegram theme/viewport CSS variable binding, responsive AppShell/navigation, and a typed API boundary helper.
+- **Tests:** added the first frontend unit contract for forwarding raw Telegram init data to the future KEYDROP API.
+- **CI:** added frontend typecheck, unit-test and production-build checks to GitHub Actions.
+- **Security boundary:** the frontend does not contain LittleFox credentials and does not access PostgreSQL directly. Raw Telegram init data is treated as an authentication input for the backend, not as trusted client identity.
+- **Verification status:** implementation is present in this PR, but CI has not yet been observed passing for the new frontend job; no local npm execution was possible in the current environment.
+- **Next:** after CI verification, proceed to Stage 2 — Python HTTP API and server-side Telegram init-data validation.
+
 ## 2026-10-29 — KEYDROP storefront and MVP foundation
 
 - **Goal:** align the project documentation with the agreed KEYDROP product direction and define the path from the existing bot foundation to a testable Telegram Mini App MVP.
@@ -7,8 +17,8 @@
 - **Changed:** added `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/INTEGRATIONS.md`, `docs/integrations/littlefox.md` and `docs/MVP_PLAN.md`; reconciled `README.md`, `docs/PROJECT_STATUS.md` and `docs/DECISIONS.md`.
 - **Product scope:** MVP prioritizes catalog, product detail, favorites, cart, server-confirmed/idempotent purchase, fulfillment, orders, notifications and referral attribution. Loyalty/gamification remains post-MVP.
 - **Acceptance:** `docs/MVP_PLAN.md` defines the explicit **MVP READY — можно тестировать** gate and requires a deployed Telegram test environment plus evidence for the critical purchase flow.
-- **Verification:** documentation changes were written to the `docs/keydrop-mvp-foundation` branch. No application code was changed in this stage; runtime checks are therefore not yet applicable.
-- **Next:** implement Stage 1 — React + TypeScript + Vite Mini App foundation.
+- **Verification:** documentation changes were written to the `docs/keydrop-mvp-foundation` branch. No application code was changed in this stage; runtime checks were therefore not applicable.
+- **Next:** implement and verify Stage 1 — React + TypeScript + Vite Mini App foundation.
 
 ## Historical project work
 
