@@ -295,8 +295,9 @@ For group activity tracking, remember that Telegram bot privacy settings affect 
 - `/start` — register/update your profile.
 - `/rank` — show your position, XP, level, message count, and progress to the next level in the current group.
 - `/rank @username` — show the rank of a user who has activity statistics in that group.
+- `/top` — show the top 10 active members in the current group.
 
-The rank is calculated per group. A username lookup only finds members who have already generated activity in that group.
+Rankings are calculated per group. Username lookup only finds members who have already generated activity in that group.
 
 ## Useful commands
 
