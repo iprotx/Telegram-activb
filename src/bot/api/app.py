@@ -3,12 +3,15 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Header, HTTPException, status
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from bot.api.auth.telegram import TelegramAuthError, TelegramInitData, validate_init_data
 from bot.config import Settings
+from bot.db.models import Product
+from bot.integrations.littlefox import LittleFoxClient, LittleFoxError
+from bot.repositories.products import ProductRepository
 from bot.repositories.users import UserRepository
 
 
@@ -54,6 +57,11 @@ def create_api_app(
                 detail={"code": exc.code, "message": str(exc)},
             ) from exc
 
+    def get_littlefox_client() -> LittleFoxClient | None:
+        if not settings.littlefox_api_key_value:
+            return None
+        return LittleFoxClient(settings.littlefox_base_url, settings.littlefox_api_key_value)
+
     @app.get("/api/v1/health")
     async def health() -> dict[str, str]:
         return {"status": "ok"}
@@ -81,4 +89,61 @@ def create_api_app(
             "last_name": customer.last_name,
         }
 
+    @app.get("/api/v1/products")
+    async def products(
+        _: Annotated[TelegramInitData, Depends(get_telegram_user)],
+        session: Annotated[AsyncSession, Depends(get_session)],
+        search: str | None = Query(default=None, max_length=100),
+        category: str | None = Query(default=None, max_length=255),
+        limit: int = Query(default=50, ge=1, le=100),
+    ) -> dict[str, object]:
+        client = get_littlefox_client()
+        repository = ProductRepository(session)
+        if client is not None:
+            try:
+                for item in await client.list_products(limit=limit):
+                    await repository.upsert_from_provider(item)
+                await session.commit()
+            except LittleFoxError as exc:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail={"code": "catalog_unavailable", "message": str(exc)},
+                ) from exc
+
+        items = await repository.list_available(search=search, category=category, limit=limit)
+        return {
+            "items": [serialize_product(item) for item in items],
+            "limit": limit,
+        }
+
+    @app.get("/api/v1/products/{product_id}")
+    async def product_detail(
+        product_id: int,
+        _: Annotated[TelegramInitData, Depends(get_telegram_user)],
+        session: Annotated[AsyncSession, Depends(get_session)],
+    ) -> dict[str, object | None]:
+        product = await ProductRepository(session).get_by_id(product_id)
+        if product is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"code": "not_found", "message": "Product not found"},
+            )
+        return serialize_product(product)
+
     return app
+
+
+def serialize_product(product: Product) -> dict[str, object | None]:
+    return {
+        "id": product.id,
+        "provider_product_id": product.provider_product_id,
+        "name": product.name,
+        "description": product.description,
+        "description_html": product.description_html,
+        "price_kopeks": product.price_kopeks,
+        "currency": product.currency,
+        "stock": product.stock,
+        "stock_unlimited": product.stock_unlimited,
+        "available": product.available,
+        "category": product.category,
+    }
