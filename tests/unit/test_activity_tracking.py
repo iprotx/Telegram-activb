@@ -13,6 +13,8 @@ class FakeActivityRepository:
         self.recorded: list[dict[str, Any]] = []
         self.rank_result: tuple[ChatMember, User, int] | None = None
         self.rank_lookup: dict[str, Any] | None = None
+        self.top_result: list[tuple[ChatMember, User]] = []
+        self.top_lookup: dict[str, Any] | None = None
 
     async def get_member_rank(
         self,
@@ -27,6 +29,15 @@ class FakeActivityRepository:
             "username": username,
         }
         return self.rank_result
+
+    async def get_top_members(
+        self,
+        *,
+        chat_telegram_id: int,
+        limit: int = 10,
+    ) -> list[tuple[ChatMember, User]]:
+        self.top_lookup = {"chat_telegram_id": chat_telegram_id, "limit": limit}
+        return self.top_result
 
     async def prepare_message(
         self,
@@ -190,3 +201,31 @@ async def test_activity_service_returns_none_when_rank_does_not_exist() -> None:
         "user_telegram_id": 200,
         "username": None,
     }
+
+
+
+async def test_activity_service_returns_top_members_for_requested_chat() -> None:
+    member = make_member(xp=250, level=2)
+    user = make_user()
+    repository = FakeActivityRepository(member)
+    repository.top_result = [(member, user)]
+    service = ActivityService(repository)  # type: ignore[arg-type]
+
+    result = await service.get_top_members(chat_telegram_id=-100, limit=5)
+
+    assert result == [(member, user)]
+    assert repository.top_lookup == {"chat_telegram_id": -100, "limit": 5}
+
+
+async def test_activity_service_rejects_invalid_top_limit() -> None:
+    repository = FakeActivityRepository(make_member())
+    service = ActivityService(repository)  # type: ignore[arg-type]
+
+    try:
+        await service.get_top_members(chat_telegram_id=-100, limit=0)
+    except ValueError as error:
+        assert str(error) == "limit must be between 1 and 50"
+    else:
+        raise AssertionError("expected ValueError for zero limit")
+
+    assert repository.top_lookup is None
