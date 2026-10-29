@@ -9,6 +9,21 @@ from bot.middlewares.services import ServicesMiddleware
 from bot.services.users import UserService
 
 
+class FakeTransaction:
+    def __init__(self, session: "FakeSession") -> None:
+        self._session = session
+
+    async def __aenter__(self) -> "FakeTransaction":
+        return self
+
+    async def __aexit__(self, exc_type: Any, exc: Any, traceback: Any) -> bool:
+        if exc_type is None:
+            self._session.commit_calls += 1
+        else:
+            self._session.rollback_calls += 1
+        return False
+
+
 class FakeSession:
     def __init__(self) -> None:
         self.commit_calls = 0
@@ -20,11 +35,8 @@ class FakeSession:
     async def __aexit__(self, exc_type: Any, exc: Any, traceback: Any) -> bool:
         return False
 
-    async def commit(self) -> None:
-        self.commit_calls += 1
-
-    async def rollback(self) -> None:
-        self.rollback_calls += 1
+    def begin(self) -> FakeTransaction:
+        return FakeTransaction(self)
 
 
 class FakeSessionFactory:
