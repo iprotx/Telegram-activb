@@ -5,12 +5,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
 
-class Settings(BaseSettings):
+class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    bot_token: SecretStr
     database_url: str = "sqlite+aiosqlite:///./bot.db"
-    log_level: str = "INFO"
 
     @field_validator("database_url")
     @classmethod
@@ -19,6 +17,11 @@ class Settings(BaseSettings):
         if url.drivername not in {"sqlite+aiosqlite", "postgresql+asyncpg"}:
             raise ValueError("database_url must use an async database driver")
         return value
+
+
+class Settings(DatabaseSettings):
+    bot_token: SecretStr
+    log_level: str = "INFO"
 
     @field_validator("log_level")
     @classmethod
@@ -34,4 +37,4 @@ class Settings(BaseSettings):
 
 
 def get_database_url() -> str:
-    return Settings(bot_token=SecretStr("")).database_url
+    return DatabaseSettings().database_url
