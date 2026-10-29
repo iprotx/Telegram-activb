@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-29 — Welcome message for new group members
+
+- **Goal:** greet a user when they newly join a group or supergroup.
+- **Changed:** added a `chat_member` handler that welcomes newly active human members, ignores bots, departures, users already present, and non-group chats. No database schema or dependencies changed.
+- **Tests:** added behavior tests before implementation; coverage includes join, already-member, leave, bot, non-group, and restricted non-member cases.
+- **Operational requirement:** Telegram must deliver `chat_member` updates, which requires the bot to be an administrator in the group.
+- **Verification:** CI pending; do not treat this change as complete until the full workflow passes.
+- **Branch:** `feat/welcome-new-members`.
+- **Next:** verify CI, update this entry with the run, then review the PR. Merge remains an explicit user decision.
+
 ## 2026-10-29 — Initial `/top` leaderboard
 
 - **Goal:** show the top 10 active users in the current group.
