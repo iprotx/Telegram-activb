@@ -40,9 +40,9 @@
 - [x] Не найден подтверждённый мёртвый код, который стоило бы удалять в рамках этой узкой задачи.
 - [x] Не менять transaction scope в рамках этого cleanup.
 - [x] Уточнить конфигурационную границу тестами: helper загрузки DB URL должен работать без `BOT_TOKEN`.
-- [ ] Запустить локально доступные проверки.
-- [ ] Проверить GitHub Actions для ветки.
-- [ ] Сделать атомарный commit.
+- [x] Проверки выполнены в CI; локальный запуск через подключённый GitHub file connector недоступен.
+- [x] GitHub Actions run [40888401905](https://github.com/iprotx/Telegram-activb/actions/runs/40888401905) прошёл успешно.
+- [x] Изменения сохранены небольшими Conventional Commits в отдельной ветке.
 
 ### Task 2: Configuration simplification review
 
@@ -54,7 +54,7 @@
 - [x] Убрать искусственное создание `Settings(bot_token=SecretStr(""))`: выделить общие database settings, сохранив обязательность `BOT_TOKEN` в приложении.
 - [x] Сохранить одну реализацию URL validation и env-over-`.env` precedence через наследование настроек; Alembic продолжает вызывать `get_database_url()`.
 - [x] Обновить characterization tests, явно проверяющие работу `get_database_url()` без `BOT_TOKEN`.
-- [ ] Подтвердить отсутствие drift/регрессий полным набором проверок.
+- [x] CI подтвердил отсутствие регрессий: unit и PostgreSQL tests, Alembic check, mypy, Ruff, pip-audit и Docker smoke прошли.
 
 ### Task 3: Scalability follow-up
 
@@ -70,12 +70,12 @@
 
 ### Task 4: Verification
 
-- [ ] Ruff format check.
-- [ ] Ruff lint.
-- [ ] mypy.
-- [ ] Alembic migrations/check.
-- [ ] Unit tests.
-- [ ] PostgreSQL integration tests.
-- [ ] pip-audit.
-- [ ] Docker build/runtime smoke.
-- [ ] Проверить итоговый diff и отсутствие лишнего рефакторинга.
+- [x] Ruff format check.
+- [x] Ruff lint.
+- [x] mypy.
+- [x] Alembic migrations/check.
+- [x] Unit tests.
+- [x] PostgreSQL integration tests.
+- [x] pip-audit.
+- [x] Docker build/runtime smoke.
+- [x] Итоговый diff ограничен конфигурацией, соответствующими тестами и документацией; транзакции и activity semantics не затронуты.
