@@ -28,9 +28,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("telegram_id"),
     )
-    op.create_index("ix_users_telegram_id", "users", ["telegram_id"], unique=True)
 
 
 def downgrade() -> None:
-    op.drop_index("ix_users_telegram_id", table_name="users")
     op.drop_table("users")
