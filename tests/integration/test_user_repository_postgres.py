@@ -10,7 +10,7 @@ from bot.db.models import User
 from bot.repositories.users import UserRepository
 
 
-pytestmark = pytest.mark.postgres
+pytestmark = [pytest.mark.postgres]
 
 
 def _database_url() -> str:
@@ -27,7 +27,12 @@ async def test_user_schema_allows_nullable_profile_fields_and_enforces_unique_te
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
     async with session_factory() as session:
-        first_user = User(telegram_id=-910000000001, username=None, first_name=None, last_name=None)
+        first_user = User(
+            telegram_id=-910000000001,
+            username=None,
+            first_name=None,
+            last_name=None,
+        )
         session.add(first_user)
         await session.commit()
 
