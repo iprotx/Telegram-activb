@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from bot.db.base import Base
 from bot.db.models import ChatMember, User
 from bot.repositories.activity import ActivityRepository
+from bot.services.activity_tracking import ActivityService
 
 
 async def test_activity_records_messages_idempotently_and_respects_cooldown(
@@ -37,7 +38,7 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
     async with session_factory() as session:
         user = await session.get(User, user_id)
         assert user is not None
-        member = await ActivityRepository(session).record_message(
+        member = await ActivityService(ActivityRepository(session)).record_message(
             chat_telegram_id=-700_001,
             chat_title="Activity test",
             user=user,
@@ -51,7 +52,7 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
     async with session_factory() as session:
         user = await session.get(User, user_id)
         assert user is not None
-        member = await ActivityRepository(session).record_message(
+        member = await ActivityService(ActivityRepository(session)).record_message(
             chat_telegram_id=-700_001,
             chat_title="Activity test",
             user=user,
@@ -65,7 +66,7 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
     async with session_factory() as session:
         user = await session.get(User, user_id)
         assert user is not None
-        member = await ActivityRepository(session).record_message(
+        member = await ActivityService(ActivityRepository(session)).record_message(
             chat_telegram_id=-700_001,
             chat_title="Activity test",
             user=user,
@@ -78,7 +79,7 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
     async with session_factory() as session:
         user = await session.get(User, user_id)
         assert user is not None
-        member = await ActivityRepository(session).record_message(
+        member = await ActivityService(ActivityRepository(session)).record_message(
             chat_telegram_id=-700_001,
             chat_title="Activity test",
             user=user,
@@ -130,7 +131,7 @@ async def test_concurrent_first_messages_are_serialized() -> None:
             user = await session.get(User, user_id)
             assert user is not None
             await barrier.wait()
-            await ActivityRepository(session).record_message(
+            await ActivityService(ActivityRepository(session)).record_message(
                 chat_telegram_id=chat_telegram_id,
                 chat_title="Concurrent activity test",
                 user=user,
