@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import cast
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -99,7 +100,7 @@ class ActivityRepository:
         if row is None:
             return None
         member, user, position = row
-        return member, user, int(position)
+        return cast(ChatMember, member), cast(User, user), cast(int, position)
 
     async def _get_or_create_chat(self, telegram_id: int, title: str | None) -> Chat:
         result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))
