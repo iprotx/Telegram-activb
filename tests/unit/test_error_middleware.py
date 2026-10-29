@@ -17,16 +17,18 @@ async def test_error_middleware_logs_diagnostics_and_reraises(
     async def handler(event: TelegramObject, data: dict[str, Any]) -> None:
         raise error
 
-    with caplog.at_level(logging.ERROR, logger="bot.middlewares.errors"):
-        with pytest.raises(RuntimeError) as exc_info:
-            await middleware(
-                cast(
-                    Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
-                    handler,
-                ),
-                cast(TelegramObject, object()),
-                {},
-            )
+    with (
+        caplog.at_level(logging.ERROR, logger="bot.middlewares.errors"),
+        pytest.raises(RuntimeError) as exc_info,
+    ):
+        await middleware(
+            cast(
+                Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+                handler,
+            ),
+            cast(TelegramObject, object()),
+            {},
+        )
 
     assert exc_info.value is error
     assert "Unhandled Telegram update error" in caplog.text
@@ -49,19 +51,21 @@ async def test_error_middleware_does_not_log_update_or_context_secrets(
     async def handler(event: TelegramObject, data: dict[str, Any]) -> None:
         raise RuntimeError("handler failed")
 
-    with caplog.at_level(logging.ERROR, logger="bot.middlewares.errors"):
-        with pytest.raises(RuntimeError, match="handler failed"):
-            await middleware(
-                cast(
-                    Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
-                    handler,
-                ),
-                cast(TelegramObject, SensitiveEvent()),
-                {
-                    "bot_token": token_sentinel,
-                    "serialized_update": payload_sentinel,
-                },
-            )
+    with (
+        caplog.at_level(logging.ERROR, logger="bot.middlewares.errors"),
+        pytest.raises(RuntimeError, match="handler failed"),
+    ):
+        await middleware(
+            cast(
+                Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+                handler,
+            ),
+            cast(TelegramObject, SensitiveEvent()),
+            {
+                "bot_token": token_sentinel,
+                "serialized_update": payload_sentinel,
+            },
+        )
 
     assert "Unhandled Telegram update error" in caplog.text
     assert token_sentinel not in caplog.text
