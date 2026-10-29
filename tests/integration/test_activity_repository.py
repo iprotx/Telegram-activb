@@ -90,3 +90,70 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
         assert (member.message_count, member.xp, member.level) == (3, 20, 1)
 
     await engine.dispose()
+
+import asyncio
+import os
+from uuid import uuid4
+
+import pytest
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+from bot.db.models import User
+from bot.repositories.activity import ActivityRepository
+
+
+@pytest.mark.skipif(
+    not os.getenv("DATABASE_URL"),
+    reason="requires PostgreSQL integration database",
+)
+async def test_concurrent_first_messages_are_serialized() -> None:
+    database_url = os.environ["DATABASE_URL"]
+    if not database_url.startswith("postgresql+asyncpg://"):
+        pytest.fail("DATABASE_URL must use PostgreSQL asyncpg for this integration test")
+
+    engine = create_async_engine(database_url)
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    unique_id = uuid4().int % (2**62)
+    user_telegram_id = unique_id + 1
+    chat_telegram_id = -(unique_id + 1)
+    now = datetime(2026, 1, 1, tzinfo=UTC)
+
+    async with session_factory() as session:
+        user = User(
+            telegram_id=user_telegram_id,
+            username="concurrent-activity-test",
+            first_name="Concurrent",
+            last_name="Activity",
+        )
+        session.add(user)
+        await session.commit()
+        user_id = user.id
+
+    barrier = asyncio.Barrier(2)
+
+    async def record(message_id: int) -> None:
+        async with session_factory() as session:
+            user = await session.get(User, user_id)
+            assert user is not None
+            await barrier.wait()
+            await ActivityRepository(session).record_message(
+                chat_telegram_id=chat_telegram_id,
+                chat_title="Concurrent activity test",
+                user=user,
+                message_id=message_id,
+                now=now,
+            )
+            await session.commit()
+
+    await asyncio.gather(record(101), record(102))
+
+    async with session_factory() as session:
+        member = await session.scalar(
+            select(ChatMember).where(ChatMember.user_id == user_id)
+        )
+        assert member is not None
+        assert member.message_count == 2
+        # The same instant is inside the cooldown, so only one concurrent message awards XP.
+        assert member.xp == 10
+
+    await engine.dispose()
