@@ -38,6 +38,7 @@ _Last reconciled: 2026-10-29_
 - [ ] [#15 User schema constraints and PostgreSQL registration concurrency](https://github.com/iprotx/Telegram-activb/issues/15).
 - [ ] [#16 Docker runtime smoke test and release-readiness review](https://github.com/iprotx/Telegram-activb/issues/16).
 - [ ] [#18 Move activity policy decisions out of the repository layer](https://github.com/iprotx/Telegram-activb/issues/18).
+- [ ] [#20 Verify SQLite Alembic migration compatibility](https://github.com/iprotx/Telegram-activb/issues/20).
 
 ### P2 — Release readiness
 
