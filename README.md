@@ -290,6 +290,14 @@ After the bot starts successfully:
 
 For group activity tracking, remember that Telegram bot privacy settings affect which group messages a bot receives. If a feature depends on ordinary group messages, review the bot's privacy mode in BotFather and the permissions of the bot in the target group.
 
+## Bot commands
+
+- `/start` — register/update your profile.
+- `/rank` — show your position, XP, level, message count, and progress to the next level in the current group.
+- `/rank @username` — show the rank of a user who has activity statistics in that group.
+
+The rank is calculated per group. A username lookup only finds members who have already generated activity in that group.
+
 ## Useful commands
 
 ### Native Windows / Ubuntu / WSL
