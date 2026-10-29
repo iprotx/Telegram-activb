@@ -1,5 +1,14 @@
 # Work Log
 
+## 2026-10-29 — Startup/import-safety regression tests
+
+- **Goal:** cover issue #14's import safety, dispatcher wiring, and startup failure cleanup contracts.
+- **Changed:** added `tests/unit/test_main.py`: an isolated subprocess imports `bot.main` without a token and asserts that no runtime resources/polling start; the dispatcher test verifies custom middleware and root-router registration; a failure-path test verifies database disposal if polling raises.
+- **Production code:** unchanged; all three tests pass against the current implementation.
+- **Verification:** CI run [40869999942](https://github.com/iprotx/Telegram-activb/actions/runs/40869999942) passed Ruff format/lint, mypy, Alembic migrations/check, both general and PostgreSQL pytest suites, dependency audit, and Docker build.
+- **Review state:** PR #29 is open; issue #14 remains open until the change is reviewed and merged.
+- **Next:** after PR #29 is integrated, continue with issue #16 (Docker runtime smoke).
+
 ## 2026-10-29 — Non-AI chat bot feature research plan
 
 - **Goal:** define an evidence-backed process for studying comparable Telegram group bots and selecting deterministic activity, moderation, and admin features.
