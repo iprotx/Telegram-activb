@@ -6,9 +6,9 @@
 - **Changed:** introduced `DatabaseSettings` for database URL configuration and validation; `Settings` extends it and still requires `bot_token`. `get_database_url()` no longer constructs application settings with a synthetic empty secret. Existing environment-over-`.env` precedence is retained.
 - **Tests:** updated configuration characterization tests to explicitly remove `BOT_TOKEN` while testing Alembic's database URL loading.
 - **Architecture:** no handler, service, repository, transaction, XP, migration, or schema behavior changed.
-- **Verification:** source and test files were read back from the feature branch. Local execution is unavailable through the connected GitHub file tools; full CI verification is pending.
+- **Verification:** CI run [40888401905](https://github.com/iprotx/Telegram-activb/actions/runs/40888401905) passed Ruff format/lint, mypy, Alembic migrations/check, unit tests, PostgreSQL integration tests, pip-audit, Docker build, and Docker runtime smoke. Files were read back from the feature branch; local execution was not available through the connected GitHub file tools.
 - **Branch:** `refactor/config-settings-boundary`, based on `main` at `fe25dba738f8201646772f6f8409c9d77c088705`.
-- **Next:** open a PR to run the repository CI, then update this log and the plan with actual check results.
+- **PR:** [#33](https://github.com/iprotx/Telegram-activb/pull/33) is open for review; not merged.
 
 ## 2026-10-29 — Startup/import-safety regression tests
 
