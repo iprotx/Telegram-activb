@@ -24,9 +24,8 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("telegram_id"),
     )
-    op.create_index("ix_chats_telegram_id", "chats", ["telegram_id"], unique=False)
+    op.create_index("ix_chats_telegram_id", "chats", ["telegram_id"], unique=True)
 
     op.create_table(
         "chat_members",
