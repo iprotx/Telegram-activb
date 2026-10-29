@@ -40,7 +40,10 @@ def test_settings_accept_postgresql_asyncpg(monkeypatch: pytest.MonkeyPatch) -> 
     assert settings.database_url == "postgresql+asyncpg://localhost/bot"
 
 
-@pytest.mark.parametrize("log_level", ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+@pytest.mark.parametrize(
+    "log_level",
+    ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+)
 def test_settings_accept_standard_log_levels(
     monkeypatch: pytest.MonkeyPatch,
     log_level: str,
