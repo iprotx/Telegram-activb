@@ -1,5 +1,14 @@
 # Work Log
 
+## 2026-10-29 — Project management baseline
+
+- **Goal:** make project status, priorities, decisions, and progress traceable across tasks.
+- **Changed:** added the status/roadmap page, decision log, work log, README links, and explicit stage-reporting rules in AGENTS.md.
+- **Backlog:** opened [issue #11](https://github.com/iprotx/Telegram-activb/issues/11) to reconcile the detailed production-hardening plan against source/tests/CI and create evidence-backed follow-up tasks.
+- **Verification:** reviewed the current main commit, PR #10 merge state, CI result, README, AGENTS.md, and detailed hardening plan. Documentation-only change; full CI will be evaluated on this PR.
+- **Not verified:** all detailed hardening plan items are not yet reconciled; candidate items remain marked unverified in PROJECT_STATUS.md.
+- **Next:** review this documentation PR and CI, then handle issue #11 as a separate bounded task.
+
 Append a short entry after every meaningful task or PR. Newest entries go first. Record facts and links, not assumptions.
 
 ## 2026-10-29 — Activity timestamp and concurrency hardening
