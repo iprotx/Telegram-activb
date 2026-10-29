@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -54,6 +55,52 @@ class ActivityRepository:
         )
         await self._session.flush()
         return member
+
+    async def get_member_rank(
+        self,
+        *,
+        chat_telegram_id: int,
+        user_telegram_id: int | None = None,
+        username: str | None = None,
+    ) -> tuple[ChatMember, User, int] | None:
+        ranked_members = (
+            select(
+                ChatMember.id.label("member_id"),
+                func.row_number()
+                .over(
+                    order_by=(
+                        ChatMember.xp.desc(),
+                        ChatMember.message_count.desc(),
+                        ChatMember.user_id.asc(),
+                    )
+                )
+                .label("position"),
+            )
+            .join(Chat, Chat.id == ChatMember.chat_id)
+            .where(Chat.telegram_id == chat_telegram_id)
+            .subquery()
+        )
+        statement = (
+            select(ChatMember, User, ranked_members.c.position)
+            .join(ranked_members, ranked_members.c.member_id == ChatMember.id)
+            .join(User, User.id == ChatMember.user_id)
+        )
+        if user_telegram_id is not None:
+            statement = statement.where(User.telegram_id == user_telegram_id)
+        elif username is not None:
+            normalized_username = username.removeprefix("@").casefold()
+            if not normalized_username:
+                return None
+            statement = statement.where(func.lower(User.username) == normalized_username)
+        else:
+            raise ValueError("provide exactly one of user_telegram_id or username")
+
+        result = await self._session.execute(statement)
+        row = result.one_or_none()
+        if row is None:
+            return None
+        member, user, position = row
+        return cast(ChatMember, member), cast(User, user), cast(int, position)
 
     async def _get_or_create_chat(self, telegram_id: int, title: str | None) -> Chat:
         result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))

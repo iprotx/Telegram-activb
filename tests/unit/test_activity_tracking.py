@@ -11,6 +11,22 @@ class FakeActivityRepository:
         self.duplicate = duplicate
         self.prepared: list[dict[str, Any]] = []
         self.recorded: list[dict[str, Any]] = []
+        self.rank_result: tuple[ChatMember, User, int] | None = None
+        self.rank_lookup: dict[str, Any] | None = None
+
+    async def get_member_rank(
+        self,
+        *,
+        chat_telegram_id: int,
+        user_telegram_id: int | None = None,
+        username: str | None = None,
+    ) -> tuple[ChatMember, User, int] | None:
+        self.rank_lookup = {
+            "chat_telegram_id": chat_telegram_id,
+            "user_telegram_id": user_telegram_id,
+            "username": username,
+        }
+        return self.rank_result
 
     async def prepare_message(
         self,
@@ -143,3 +159,34 @@ async def test_activity_service_does_not_persist_duplicate_message() -> None:
     assert result is member
     assert result.message_count == 0
     assert repository.recorded == []
+
+
+async def test_activity_service_looks_up_rank_in_the_requested_chat() -> None:
+    member = make_member(xp=250, level=2)
+    user = make_user()
+    repository = FakeActivityRepository(member)
+    repository.rank_result = (member, user, 3)
+    service = ActivityService(repository)  # type: ignore[arg-type]
+
+    result = await service.get_member_rank(chat_telegram_id=-100, username="test-user")
+
+    assert result == (member, user, 3)
+    assert repository.rank_lookup == {
+        "chat_telegram_id": -100,
+        "user_telegram_id": None,
+        "username": "test-user",
+    }
+
+
+async def test_activity_service_returns_none_when_rank_does_not_exist() -> None:
+    repository = FakeActivityRepository(make_member())
+    service = ActivityService(repository)  # type: ignore[arg-type]
+
+    result = await service.get_member_rank(chat_telegram_id=-100, user_telegram_id=200)
+
+    assert result is None
+    assert repository.rank_lookup == {
+        "chat_telegram_id": -100,
+        "user_telegram_id": 200,
+        "username": None,
+    }

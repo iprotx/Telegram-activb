@@ -1,5 +1,16 @@
 # Work Log
 
+## 2026-10-29 — Initial `/rank` command
+
+- **Goal:** expose existing per-chat XP, level, message count, rank position, and progress to the next level.
+- **Changed:** added `/rank` for the caller and `/rank @username` for an existing activity member in the current group; ranking is deterministic (XP descending, message count descending, user ID ascending).
+- **Architecture:** handler handles command parsing and response only; service delegates lookup; repository calculates chat-scoped position with a SQL window function. No model/schema/migration changes.
+- **Tests added:** unit tests for service lookup and command responses; SQLite integration test for chat isolation, username matching, unknown users, and stable tie ordering.
+- **Verification:** CI run [#215](https://github.com/iprotx/Telegram-activb/actions/runs/40892928139) passed Ruff format/lint, mypy, Alembic migrations/check, unit tests, PostgreSQL integration tests, pip-audit, Docker build and runtime smoke. The first CI run caught a mypy inference issue in the SQL result; explicit casts fixed it, and the subsequent full run passed.
+- **Branch:** `feat/rank-command`.
+- **Next:** review PR #35; merge remains an explicit user decision.
+
+
 ## 2026-10-29 — Transaction boundary investigation (issue #32)
 
 - **Question:** should `ServicesMiddleware` stop wrapping the entire handler in `session.begin()`?

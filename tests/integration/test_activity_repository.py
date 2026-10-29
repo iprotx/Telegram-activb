@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from bot.db.base import Base
-from bot.db.models import ChatMember, User
+from bot.db.models import Chat, ChatMember, User
 from bot.repositories.activity import ActivityRepository
 from bot.services.activity_tracking import ActivityService
 
@@ -93,6 +93,99 @@ async def test_activity_records_messages_idempotently_and_respects_cooldown(
         member = await session.scalar(select(ChatMember).where(ChatMember.user_id == user_id))
         assert member is not None
         assert (member.message_count, member.xp, member.level) == (3, 20, 1)
+
+    await engine.dispose()
+
+
+async def test_rank_is_scoped_to_chat_and_orders_ties_deterministically(tmp_path: Path) -> None:
+    engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'rank.db'}")
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+    async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.create_all)
+
+    async with session_factory() as session:
+        first_user = User(
+            telegram_id=710_001,
+            username="first-user",
+            first_name="First",
+            last_name=None,
+        )
+        second_user = User(
+            telegram_id=710_002,
+            username="second-user",
+            first_name="Second",
+            last_name=None,
+        )
+        third_user = User(
+            telegram_id=710_003,
+            username="third-user",
+            first_name="Third",
+            last_name=None,
+        )
+        first_chat = Chat(telegram_id=-710_001, title="First chat")
+        other_chat = Chat(telegram_id=-710_002, title="Other chat")
+        session.add_all([first_user, second_user, third_user, first_chat, other_chat])
+        await session.flush()
+        session.add_all(
+            [
+                ChatMember(
+                    chat_id=first_chat.id,
+                    user_id=first_user.id,
+                    xp=200,
+                    level=2,
+                    message_count=5,
+                ),
+                ChatMember(
+                    chat_id=first_chat.id,
+                    user_id=second_user.id,
+                    xp=200,
+                    level=2,
+                    message_count=10,
+                ),
+                ChatMember(
+                    chat_id=first_chat.id,
+                    user_id=third_user.id,
+                    xp=100,
+                    level=2,
+                    message_count=30,
+                ),
+                ChatMember(
+                    chat_id=other_chat.id,
+                    user_id=first_user.id,
+                    xp=900,
+                    level=4,
+                    message_count=40,
+                ),
+            ]
+        )
+        await session.commit()
+
+        repository = ActivityRepository(session)
+        first_rank = await repository.get_member_rank(
+            chat_telegram_id=-710_001,
+            user_telegram_id=710_001,
+        )
+        username_rank = await repository.get_member_rank(
+            chat_telegram_id=-710_001,
+            username="THIRD-USER",
+        )
+        other_chat_rank = await repository.get_member_rank(
+            chat_telegram_id=-710_002,
+            user_telegram_id=710_001,
+        )
+        unknown_rank = await repository.get_member_rank(
+            chat_telegram_id=-710_001,
+            username="unknown-user",
+        )
+
+        assert first_rank is not None
+        assert (first_rank[0].xp, first_rank[2]) == (200, 2)
+        assert username_rank is not None
+        assert (username_rank[1].username, username_rank[2]) == ("third-user", 3)
+        assert other_chat_rank is not None
+        assert (other_chat_rank[0].xp, other_chat_rank[2]) == (900, 1)
+        assert unknown_rank is None
 
     await engine.dispose()
 

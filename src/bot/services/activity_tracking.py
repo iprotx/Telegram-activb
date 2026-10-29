@@ -25,6 +25,14 @@ class ActivityRepositoryProtocol(Protocol):
         now: datetime,
     ) -> ChatMember: ...
 
+    async def get_member_rank(
+        self,
+        *,
+        chat_telegram_id: int,
+        user_telegram_id: int | None = None,
+        username: str | None = None,
+    ) -> tuple[ChatMember, User, int] | None: ...
+
 
 class ActivityService:
     def __init__(
@@ -64,4 +72,19 @@ class ActivityService:
             xp_awarded=xp_awarded,
             new_level=new_level,
             now=now,
+        )
+
+    async def get_member_rank(
+        self,
+        *,
+        chat_telegram_id: int,
+        user_telegram_id: int | None = None,
+        username: str | None = None,
+    ) -> tuple[ChatMember, User, int] | None:
+        if (user_telegram_id is None) == (username is None):
+            raise ValueError("provide exactly one of user_telegram_id or username")
+        return await self._repository.get_member_rank(
+            chat_telegram_id=chat_telegram_id,
+            user_telegram_id=user_telegram_id,
+            username=username,
         )
