@@ -1,5 +1,25 @@
 # Work Log
 
+## 2026-10-29 — PostgreSQL user repository verification
+
+- **Goal:** verify the `users` uniqueness constraint, nullable profile fields, and concurrent registration on the same PostgreSQL engine used by CI.
+- **Changed:** added dedicated PostgreSQL integration tests and an explicit CI step; the PostgreSQL tests require the CI PostgreSQL service and are excluded from the generic test step to make execution visible.
+- **Verification:** pending CI on the dedicated test branch.
+- **Next:** review the PostgreSQL integration CI result and merge only after all quality checks pass.
+
+## 2026-10-29 — Alembic database URL alignment
+
+- **Goal:** ensure the application and Alembic use the same validated database settings.
+- **Changed:** Alembic now reuses application `Settings`, preserving environment-over-`.env` precedence and SQLite fallback; added configuration tests.
+- **Merged:** PR #24, merge commit `f6704e14233174707df543e511f462659d4b27a0`.
+- **Verification:** CI run `40863643491` completed successfully; migration, tests, Alembic check, dependency audit, and Docker build all passed.
+
+## 2026-10-29 — Activity policy service-layer refactor
+
+- **Goal:** keep activity business decisions in the service layer and persistence operations in the repository.
+- **Merged:** PR #21, merge commit `cd96964358d79903b946225325d2c5d33f9e925a`.
+- **Verification:** CI run `40862644131` completed successfully with formatting, lint, mypy, migrations, tests, Alembic check, dependency audit, and Docker build passing.
+
 ## 2026-10-29 — Project management baseline
 
 - **Goal:** make project status, priorities, decisions, and progress traceable across tasks.
