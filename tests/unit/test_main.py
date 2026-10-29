@@ -24,9 +24,7 @@ def test_import_main_has_no_runtime_side_effects(tmp_path: Path) -> None:
 
     source_path = str(Path(__file__).resolve().parents[2] / "src")
     python_path = environment.get("PYTHONPATH", "")
-    environment["PYTHONPATH"] = os.pathsep.join(
-        item for item in (source_path, python_path) if item
-    )
+    environment["PYTHONPATH"] = os.pathsep.join(item for item in (source_path, python_path) if item)
     script = """
 from unittest.mock import patch
 
