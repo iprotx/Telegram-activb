@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, status
@@ -24,7 +25,7 @@ def create_api_app(
         allow_headers=["Authorization", "Content-Type"],
     )
 
-    async def get_session() -> AsyncSession:
+    async def get_session() -> AsyncIterator[AsyncSession]:
         async with session_factory() as session:
             yield session
 
@@ -34,7 +35,10 @@ def create_api_app(
         if not authorization or not authorization.startswith("tma "):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail={"code": "missing_init_data", "message": "Telegram init data is required"},
+                detail={
+                    "code": "missing_init_data",
+                    "message": "Telegram init data is required",
+                },
             )
 
         raw_init_data = authorization[4:]
