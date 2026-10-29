@@ -22,6 +22,10 @@ class DatabaseSettings(BaseSettings):
 class Settings(DatabaseSettings):
     bot_token: SecretStr
     log_level: str = "INFO"
+    api_host: str = "127.0.0.1"
+    api_port: int = 8000
+    telegram_init_data_max_age: int = 3600
+    cors_origins: list[str] = ["http://localhost:5173"]
 
     @field_validator("log_level")
     @classmethod
@@ -30,6 +34,13 @@ class Settings(DatabaseSettings):
         if normalized not in logging.getLevelNamesMapping():
             raise ValueError("log_level must be a standard Python log level")
         return normalized
+
+    @field_validator("telegram_init_data_max_age")
+    @classmethod
+    def validate_init_data_max_age(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("telegram_init_data_max_age must be positive")
+        return value
 
     @property
     def bot_token_value(self) -> str:
