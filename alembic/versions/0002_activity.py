@@ -24,8 +24,8 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("telegram_id", name="uq_chats_telegram_id"),
     )
-    op.create_index("ix_chats_telegram_id", "chats", ["telegram_id"], unique=True)
 
     op.create_table(
         "chat_members",
@@ -68,5 +68,5 @@ def downgrade() -> None:
     op.drop_index("ix_chat_members_user_id", table_name="chat_members")
     op.drop_index("ix_chat_members_chat_id", table_name="chat_members")
     op.drop_table("chat_members")
-    op.drop_index("ix_chats_telegram_id", table_name="chats")
+    op.drop_constraint("uq_chats_telegram_id", "chats", type_="unique")
     op.drop_table("chats")
