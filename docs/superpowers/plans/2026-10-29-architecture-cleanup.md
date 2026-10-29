@@ -1,81 +1,40 @@
 # Architecture Cleanup Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Follow the relevant project skills and use tests before changing behavior.
 
 **Goal:** Упростить архитектуру без большого переписывания и сохранить текущую надёжность.
 
-**Architecture:** Сохраняем текущую границу `handlers → services → repositories → database`. Убираем только безопасную избыточность; границы транзакций и модель активности не меняем без отдельного тестового доказательства.
+**Architecture:** Сохраняем `handlers → services → repositories → database`. Меняем только то, для чего есть конкретная польза и тестовое доказательство.
 
 **Tech Stack:** Python 3.12+, aiogram 3, SQLAlchemy async, Alembic, pytest, Ruff, mypy.
 
-**Spec:** `docs/PROJECT_STATUS.md` и текущая архитектура `src/bot/`.
+## Global constraints
 
-## Global Constraints
-
-- Не добавлять Redis, очереди, микросервисы или другой инфраструктурный слой без измеренной необходимости.
-- Не смешивать `/rank`, `/top`, welcome или moderation с этим cleanup.
-- Не менять публичное поведение бота.
-- Все изменения должны проходить существующий CI.
+- Не добавлять Redis, очереди, микросервисы или другую инфраструктуру без измеренной необходимости.
+- Не смешивать `/rank`, `/top`, welcome или moderation с архитектурной очисткой.
+- Не менять публичное поведение без regression tests.
 - Commit messages — на английском, Conventional Commits.
 
-## Review Focus
+## Completed: configuration boundary
 
-- Конфигурация: `BOT_TOKEN` остаётся обязательным, `DATABASE_URL` сохраняет env-over-`.env` precedence.
-- Alembic: URL продолжает браться из тех же настроек, что и приложение.
-- Транзакции: атомарность регистрации пользователя и activity не должна быть случайно потеряна.
-- Activity: repository не должен зависеть от service layer.
-- PostgreSQL/SQLite: существующие integration tests должны оставаться зелёными.
+- [x] Выделен `DatabaseSettings`, общий URL validation и env-over-`.env` precedence сохранены.
+- [x] `Settings` по-прежнему требует `BOT_TOKEN`; Alembic может загрузить DB URL без него.
+- [x] PR #33 merged: [ec6ad18](https://github.com/iprotx/Telegram-activb/commit/ec6ad18c7477508f3854ff32308dc897f3c94658).
+- [x] CI до merge прошёл все настроенные проверки: [run #198](https://github.com/iprotx/Telegram-activb/actions/runs/40889013179).
 
-### Task 1: Baseline and safe cleanup
+## Completed: transaction boundary investigation (issue #32)
 
-**Files:**
-- Modify: только файлы, где cleanup подтверждён тестами и не меняет поведение.
-- Test: существующие unit/integration suites.
+- [x] Проверены все текущие message handlers: `start_handler`, `activity_message_handler`; callback-query handlers не обнаружены.
+- [x] Найден внешний вызов внутри транзакции: `/start` вызывает `message.answer()` после регистрации.
+- [x] Подтверждено, что activity handler выполняет только DB operations.
+- [x] Изучены middleware unit tests и PostgreSQL rollback integration test.
+- [x] Зафиксировано решение: сохранить текущую транзакцию на update; сейчас нет измерений, оправдывающих смену контракта.
+- [x] Не менять production code: переход на отдельные commits внутри сервисов ослабил бы rollback-атомарность регистрации и activity.
+- [x] Решение и условия повторного рассмотрения записаны в `docs/DECISIONS.md`.
 
-**Interfaces:**
-- Consumes: текущие `Settings`, services, repositories и middleware.
-- Produces: тот же внешний API и те же runtime semantics.
+## Verification and follow-up
 
-- [x] Проверить baseline: текущий `main` включает PR #31, а конфигурационные тесты покрывают обязательность токена и env-over-`.env` precedence.
-- [x] Не найден подтверждённый мёртвый код, который стоило бы удалять в рамках этой узкой задачи.
-- [x] Не менять transaction scope в рамках этого cleanup.
-- [x] Уточнить конфигурационную границу тестами: helper загрузки DB URL должен работать без `BOT_TOKEN`.
-- [x] Проверки выполнены в CI; локальный запуск через подключённый GitHub file connector недоступен.
-- [x] GitHub Actions run [40888401905](https://github.com/iprotx/Telegram-activb/actions/runs/40888401905) прошёл успешно.
-- [x] Изменения сохранены небольшими Conventional Commits в отдельной ветке.
-
-### Task 2: Configuration simplification review
-
-**Files:**
-- `src/bot/config.py`
-- `alembic/env.py`
-- `tests/unit/test_config.py`
-
-- [x] Убрать искусственное создание `Settings(bot_token=SecretStr(""))`: выделить общие database settings, сохранив обязательность `BOT_TOKEN` в приложении.
-- [x] Сохранить одну реализацию URL validation и env-over-`.env` precedence через наследование настроек; Alembic продолжает вызывать `get_database_url()`.
-- [x] Обновить characterization tests, явно проверяющие работу `get_database_url()` без `BOT_TOKEN`.
-- [x] CI подтвердил отсутствие регрессий: unit и PostgreSQL tests, Alembic check, mypy, Ruff, pip-audit и Docker smoke прошли.
-
-### Task 3: Scalability follow-up
-
-**Files:**
-- `src/bot/middlewares/services.py`
-- `src/bot/services/`
-- `src/bot/repositories/`
-- соответствующие tests
-
-- [ ] Отдельно исследовать короткие transaction boundaries.
-- [x] Не менять их в этом cleanup без отдельного failing test, доказывающего требуемую семантику.
-- [ ] Продолжать отдельной задачей только если появится измеримая проблема.
-
-### Task 4: Verification
-
-- [x] Ruff format check.
-- [x] Ruff lint.
-- [x] mypy.
-- [x] Alembic migrations/check.
-- [x] Unit tests.
-- [x] PostgreSQL integration tests.
-- [x] pip-audit.
-- [x] Docker build/runtime smoke.
-- [x] Итоговый diff ограничен конфигурацией, соответствующими тестами и документацией; транзакции и activity semantics не затронуты.
+- [x] Source and tests reviewed from current `main`.
+- [x] No production code or dependencies changed in the investigation.
+- [ ] Merge the documentation PR and close issue #32.
+- [ ] Next feature work: implement `/rank`, then `/top`, separately.
