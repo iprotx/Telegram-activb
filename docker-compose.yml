@@ -19,7 +19,7 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-telegram_activb}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-telegram_activb}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
     depends_on:
       postgres:
         condition: service_healthy
