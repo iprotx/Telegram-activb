@@ -6,10 +6,12 @@
 - **Reviewed:** current main tree; user repository/service, /start handler, transaction/error middleware, config/startup wiring, user model and migration, integration/unit tests, Docker files, CI workflow, project skills, and latest main CI.
 - **Verified complete:** user profile synchronization; /start behavior; middleware commit/rollback coverage; current CI quality gates. Main CI run [40846550635](https://github.com/iprotx/Telegram-activb/actions/runs/40846550635) passed.
 - **Partial gaps confirmed:** dedicated user schema test; error middleware safe-logging tests; main import/startup tests; PostgreSQL-backed concurrent user registration test; Docker runtime smoke/clean deployment test.
-- **Issues created:** [#13 error middleware](https://github.com/iprotx/Telegram-activb/issues/13), [#14 startup safety](https://github.com/iprotx/Telegram-activb/issues/14), [#15 schema and PostgreSQL concurrency](https://github.com/iprotx/Telegram-activb/issues/15), [#16 Docker runtime smoke/release review](https://github.com/iprotx/Telegram-activb/issues/16).
+- **Issues created:** [#13 error middleware](https://github.com/iprotx/Telegram-activb/issues/13), [#14 startup safety](https://github.com/iprotx/Telegram-activb/issues/14), [#15 schema and PostgreSQL concurrency](https://github.com/iprotx/Telegram-activb/issues/15), [#16 Docker runtime smoke/release review](https://github.com/iprotx/Telegram-activb/issues/16), [#18 activity policy/repository boundary](https://github.com/iprotx/Telegram-activb/issues/18).
+- **Architecture review finding:** ActivityRepository imports XP policy and level calculation from the service layer and applies business decisions inside persistence code, violating the documented dependency direction. This is a bounded follow-up, not fixed in the audit PR.
+- **False-positive cleanup:** initially opened [#19](https://github.com/iprotx/Telegram-activb/issues/19) for concurrent duplicate event delivery, then closed it after noticing existing PostgreSQL SELECT FOR UPDATE locking serializes updates for the same member; the race was not confirmed.
 - **Changed in this stage:** added an evidence-backed iteration status table to the detailed plan and refreshed the project status page on branch `docs/reconcile-hardening-plan`.
 - **Not verified:** no live Telegram bot or deployed environment was exercised; a green CI run is not a production-readiness sign-off. Full whole-branch architecture review is still pending.
-- **Next:** open a documentation-only PR, verify its CI, then continue with the whole-branch architecture review as a separate stage.
+- **Next:** verify CI for [PR #17](https://github.com/iprotx/Telegram-activb/pull/17). Continue the whole-branch architecture review and track any additional confirmed findings separately.
 
 ## 2026-10-29 — Project management baseline
 
