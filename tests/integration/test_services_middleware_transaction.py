@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import pytest
 from aiogram.types import Update
@@ -10,8 +10,15 @@ from bot.db.models import User
 from bot.middlewares.services import ServicesMiddleware
 
 
-async def test_services_middleware_rolls_back_failed_handler(tmp_path: Path) -> None:
-    database_url = f"sqlite+aiosqlite:///{tmp_path / 'rollback.db'}"
+@pytest.mark.skipif(
+    not os.getenv("DATABASE_URL"),
+    reason="requires PostgreSQL integration database",
+)
+async def test_services_middleware_rolls_back_failed_handler() -> None:
+    database_url = os.environ["DATABASE_URL"]
+    if not database_url.startswith("postgresql+asyncpg://"):
+        pytest.fail("DATABASE_URL must use PostgreSQL asyncpg for this integration test")
+
     engine = create_async_engine(database_url)
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
