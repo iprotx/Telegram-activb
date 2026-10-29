@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, Index, Integer, UniqueConstraint, func
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from bot.db.base import Base
@@ -20,7 +20,7 @@ class ChatMember(Base):
     xp: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
     level: Mapped[int] = mapped_column(Integer, server_default="1", nullable=False)
     message_count: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
-    last_xp_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    last_xp_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), onupdate=func.now(), nullable=False
