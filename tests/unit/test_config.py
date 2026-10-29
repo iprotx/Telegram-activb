@@ -42,6 +42,7 @@ def test_settings_accept_postgresql_asyncpg(monkeypatch: pytest.MonkeyPatch) -> 
 
 def test_get_database_url_loads_dotenv(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("BOT_TOKEN", raising=False)
     monkeypatch.delenv("DATABASE_URL", raising=False)
     (tmp_path / ".env").write_text(
         "DATABASE_URL=sqlite+aiosqlite:///./from-env-file.db\n",
@@ -55,6 +56,7 @@ def test_get_database_url_prefers_environment_over_dotenv(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("BOT_TOKEN", raising=False)
     (tmp_path / ".env").write_text(
         "DATABASE_URL=sqlite+aiosqlite:///./from-env-file.db\n",
         encoding="utf-8",
