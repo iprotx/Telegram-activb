@@ -15,5 +15,7 @@ async def start_handler(message: Message, user_service: UserService) -> None:
     await user_service.register(
         telegram_id=message.from_user.id,
         username=message.from_user.username,
+        first_name=message.from_user.first_name,
+        last_name=message.from_user.last_name,
     )
     await message.answer("Привет! Бот готов к работе.")
