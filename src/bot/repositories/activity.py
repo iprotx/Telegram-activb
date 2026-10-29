@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.models import ActivityEvent, Chat, ChatMember, User
@@ -57,10 +58,13 @@ class ActivityRepository:
             chat.title = title
             return chat
 
-        async with self._session.begin_nested():
-            chat = Chat(telegram_id=telegram_id, title=title)
-            self._session.add(chat)
-            await self._session.flush()
+        try:
+            async with self._session.begin_nested():
+                chat = Chat(telegram_id=telegram_id, title=title)
+                self._session.add(chat)
+                await self._session.flush()
+        except IntegrityError:
+            pass
 
         result = await self._session.execute(select(Chat).where(Chat.telegram_id == telegram_id))
         return result.scalar_one()
@@ -75,10 +79,13 @@ class ActivityRepository:
         if member is not None:
             return member
 
-        async with self._session.begin_nested():
-            member = ChatMember(chat_id=chat_id, user_id=user_id)
-            self._session.add(member)
-            await self._session.flush()
+        try:
+            async with self._session.begin_nested():
+                member = ChatMember(chat_id=chat_id, user_id=user_id)
+                self._session.add(member)
+                await self._session.flush()
+        except IntegrityError:
+            pass
 
         result = await self._session.execute(
             select(ChatMember).where(ChatMember.chat_id == chat_id, ChatMember.user_id == user_id)
