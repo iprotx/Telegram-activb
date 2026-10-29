@@ -1,9 +1,8 @@
-import { init, initData, mockTelegramEnv, safeInit } from '@tma.js/sdk';
+import { init, mockTelegramEnv, retrieveRawInitData, safeInit } from '@tma.js/sdk';
 
 export function initializeTelegram(): void {
   const result = safeInit();
   if (result.ok) {
-    initData.restore();
     return;
   }
 
@@ -23,9 +22,8 @@ export function initializeTelegram(): void {
   });
 
   init();
-  initData.restore();
 }
 
 export function getTelegramInitData(): string {
-  return initData.raw() ?? '';
+  return retrieveRawInitData() ?? '';
 }
