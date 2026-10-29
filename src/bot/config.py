@@ -31,3 +31,7 @@ class Settings(BaseSettings):
     @property
     def bot_token_value(self) -> str:
         return self.bot_token.get_secret_value()
+
+
+def get_database_url() -> str:
+    return Settings(bot_token="").database_url
