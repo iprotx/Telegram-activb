@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Protocol
 
 from bot.db.models import ChatMember, User
-from bot.repositories.activity import ActivityRepository
 from bot.services.activity import ActivityPolicy, level_for_xp
 
 
