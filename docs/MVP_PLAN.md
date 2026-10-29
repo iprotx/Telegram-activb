@@ -10,7 +10,9 @@ Deliver a testable Telegram Mini App where a real Telegram user can open KEYDROP
 
 - Stage 0 — documentation and architecture: **implemented in PR #38; not merged**.
 - Stage 1 — React + TypeScript + Vite Mini App foundation: **implemented in PR #38; CI verification pending**.
-- Stage 2+ — backend API, catalog integration, checkout, orders, notifications, referrals and deployment: **not started**.
+- Stage 2 — Telegram authentication + `/api/v1/me`: **implemented in PR #38; CI verification pending**.
+- Stage 2 remaining — catalog API and storefront data flow.
+- Stage 4+ — checkout, orders, notifications, referrals and deployment remain ahead.
 
 ## MVP definition
 
@@ -75,115 +77,91 @@ These remain post-MVP capabilities unless a later product decision promotes one 
 
 ### Stage 2 — Backend API foundation
 
+**Status:** authentication foundation implemented; CI verification pending.
+
 - add HTTP API transport without breaking existing aiogram handlers;
 - validate Telegram Mini App `initData` server-side;
 - expose authenticated customer endpoint;
-- add catalog/product endpoints;
-- establish API error format and authorization rules;
-- add database models and Alembic migrations for MVP domains.
+- persist/synchronize Telegram customer identity through the existing repository layer;
+- define stable API authentication errors;
+- add API tests for valid, invalid and expired Telegram auth.
 
-**Exit:** authenticated Mini App can read customer and catalog data from KEYDROP API.
+**Exit:** a valid Telegram Mini App request resolves exactly one KEYDROP customer, invalid/expired init data is rejected, and the API auth contract is covered by tests.
 
-### Stage 3 — Catalog and customer UX
+### Stage 3 — Catalog and storefront
 
-- Home/catalog/search/filter basics;
-- product detail page;
-- favorites;
-- customer profile / My KEYDROP;
-- order-history shell;
-- responsive Telegram UI states.
+- add product/category persistence and LittleFox catalog synchronization boundary;
+- expose catalog list/detail endpoints;
+- implement Home, Catalog, search/filter basics and Product Detail;
+- add favorites;
+- add authenticated customer/order-history shell.
 
-**Exit:** user can browse, inspect and save products end-to-end against real backend data.
+**Exit:** Mini App displays real server-controlled product data with usable loading, empty and error states.
 
-### Stage 4 — Cart and checkout
+### Stage 4 — Cart, checkout and fulfillment
 
-- cart persistence;
-- server-side cart revalidation;
-- price/stock validation at checkout;
-- explicit checkout states;
-- create internal order before external purchase;
-- LittleFox idempotency key generation and persistence;
-- retry/reconciliation handling;
-- delivery visibility only after confirmed fulfillment.
+- add cart persistence and server revalidation;
+- add internal order model;
+- implement LittleFox adapter;
+- persist idempotency key and operation parameters before provider purchase;
+- implement processing/recovery reconciliation;
+- expose delivery only after confirmed provider delivery.
 
-**Exit:** a test product can be purchased without duplicate charging and its delivery can be displayed to the owner.
+**Exit:** test purchase succeeds, duplicate requests do not create duplicate provider purchases, processing/unknown results reconcile, and delivery data is protected.
 
-### Stage 5 — Orders and notifications
+### Stage 5 — Orders and communication
 
-- order timeline/status mapping;
-- order detail and delivery display;
-- bot notification for successful delivery;
-- notification preferences;
-- notification delivery audit record;
-- safe failure messages and retry behavior.
+- add order detail/timeline;
+- add successful-delivery notification;
+- add notification preferences;
+- add notification delivery records.
 
-**Exit:** customer can follow a purchase from checkout to delivered order and receive the expected Telegram notification.
+**Exit:** Mini App and bot notifications show the same authoritative order state and optional communications respect preferences.
 
 ### Stage 6 — Referral foundation
 
-- `startapp` referral attribution;
-- referral relationship persistence;
-- protection against self-referral and duplicate attribution;
-- basic reward/event model, without a complex loyalty economy;
-- referral visibility in My KEYDROP.
+- define `startapp` referral code format;
+- attribute referrals server-side;
+- persist referral relationship/events;
+- protect against self-referral and duplicate/conflicting attribution;
+- expose minimal referral status.
 
-**Exit:** A invites B, B opens KEYDROP through the referral link, attribution is persisted, and the relationship remains visible to backend tests/admin inspection.
+**Exit:** A → referral link → B produces one stable attribution and repeated opens do not duplicate it.
 
-### Stage 7 — MVP hardening and test deployment
+### Stage 7 — Hardening and test deployment
 
-- full backend unit/integration tests;
-- frontend build/type/lint checks;
+- backend unit/integration coverage;
+- frontend typecheck/test/build checks;
 - migration consistency checks;
-- LittleFox test-product flow;
-- Telegram Mini App manual QA;
-- mobile viewport/theme QA;
-- error/retry/idempotency scenarios;
-- deployment to a non-production test environment;
-- test bot configured to launch the Mini App.
+- LittleFox test purchase flow;
+- Telegram manual QA;
+- deploy frontend and backend to a controlled test environment;
+- configure test bot/Mini App entry point;
+- document known limitations.
 
-**Exit:** all MVP acceptance criteria are evidenced by tests or manual QA and the test environment is reachable from Telegram.
-
-## MVP acceptance checklist
-
-- [ ] Mini App launches from Telegram.
-- [ ] `initData` is validated server-side.
-- [ ] Customer identity is persisted.
-- [ ] Catalog loads from KEYDROP API.
-- [ ] Product detail loads.
-- [ ] Favorites work.
-- [ ] Cart works.
-- [ ] Server revalidates price/stock before purchase.
-- [ ] LittleFox test purchase succeeds.
-- [ ] Duplicate/retry purchase does not double-charge.
-- [ ] Processing order can be reconciled.
-- [ ] Delivery is withheld until `delivered`.
-- [ ] Order history/detail works.
-- [ ] Telegram delivery notification works when permitted.
-- [ ] Notification preferences are respected.
-- [ ] Referral attribution works.
-- [ ] Backend tests pass.
-- [ ] Frontend checks pass.
-- [ ] Alembic checks pass.
-- [ ] Test deployment works.
-- [ ] Manual Telegram QA passes on the target mobile clients.
+**Exit:** every MVP checklist item has evidence and the critical purchase flow works in the deployed Telegram environment.
 
 ## MVP READY gate
 
-MVP is **not** considered ready merely because the code builds. The project is MVP READY only when the acceptance checklist has evidence and the deployed test environment has completed the critical purchase flow.
+Do not call the project ready because the code merely builds.
 
-When this gate is reached, report explicitly:
+The explicit release statement is:
 
 > **MVP READY — можно тестировать.**
 
-The report must include the test environment, test bot/Mini App entry point, what was verified, known limitations and the exact test scenarios to run.
+It may be reported only after:
 
-## After MVP
+1. frontend is deployed;
+2. backend API is deployed;
+3. Telegram Mini App opens from the test bot;
+4. Telegram authentication is server-validated;
+5. catalog/product data is real and server-controlled;
+6. test purchase reaches LittleFox;
+7. duplicate/retry behavior has been verified;
+8. processing/reconciliation behavior has been verified;
+9. delivery is withheld until `delivered`;
+10. order history is visible to the correct customer;
+11. notifications/referral smoke tests pass;
+12. known limitations are documented.
 
-Priority order:
-
-1. customer segmentation and targeted campaigns;
-2. richer referral rewards;
-3. loyalty / KEYDROP CLUB;
-4. product subscriptions and availability notifications;
-5. personalization and recommendations;
-6. quests, achievements and other gamification.
+At that point report the test entry point, verified scenarios and exact deployment environment. Deployment remains an explicit user approval gate.
