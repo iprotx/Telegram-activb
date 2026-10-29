@@ -1,9 +1,10 @@
 from datetime import UTC, datetime
-from hashlib import sha256
 import hmac
+from hashlib import sha256
 from urllib.parse import urlencode
 
-from fastapi.testclient import TestClient
+import httpx
+import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from bot.api.app import create_api_app
@@ -23,28 +24,26 @@ def make_init_data(bot_token: str, *, user_id: int = 123456789) -> str:
     return urlencode({**values, "hash": digest})
 
 
-def test_me_creates_customer_from_valid_telegram_init_data() -> None:
-    async def setup():
-        engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+@pytest.mark.asyncio
+async def test_me_creates_customer_from_valid_telegram_init_data() -> None:
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    try:
         async with engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
-        return engine
 
-    import asyncio
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        settings = Settings(bot_token="123456:TEST")
+        app = create_api_app(settings, session_factory)
 
-    engine = asyncio.run(setup())
-    session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    settings = Settings(bot_token="123456:TEST")
-    app = create_api_app(settings, session_factory)
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get(
+                "/api/v1/me",
+                headers={"Authorization": f"tma {make_init_data(settings.bot_token_value)}"},
+            )
 
-    with TestClient(app) as client:
-        response = client.get(
-            "/api/v1/me",
-            headers={"Authorization": f"tma {make_init_data(settings.bot_token_value)}"},
-        )
-
-    assert response.status_code == 200
-    assert response.json()["telegram_id"] == 123456789
-    assert response.json()["username"] == "tester"
-
-    asyncio.run(engine.dispose())
+        assert response.status_code == 200
+        assert response.json()["telegram_id"] == 123456789
+        assert response.json()["username"] == "tester"
+    finally:
+        await engine.dispose()
