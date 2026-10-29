@@ -263,9 +263,7 @@ async def test_top_members_is_chat_scoped_ordered_and_limited(tmp_path: Path) ->
             ("top-third", 200),
         ]
         other_top = await repository.get_top_members(chat_telegram_id=-720_002)
-        assert [(user.username, member.xp) for member, user in other_top] == [
-            ("top-first", 900)
-        ]
+        assert [(user.username, member.xp) for member, user in other_top] == [("top-first", 900)]
 
     await engine.dispose()
 
