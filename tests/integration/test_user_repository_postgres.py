@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from bot.db.models import User
 from bot.repositories.users import UserRepository
 
-
 pytestmark = [pytest.mark.postgres]
 
 
