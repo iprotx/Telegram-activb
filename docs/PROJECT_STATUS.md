@@ -2,49 +2,78 @@
 
 _Last reconciled: 2026-10-29_
 
-## Current snapshot
+## Current product direction
+
+KEYDROP is evolving from the current aiogram bot foundation into a Telegram-first digital-goods storefront with its own customer base.
+
+The target product consists of:
+
+- React + TypeScript + Vite Telegram Mini App;
+- Python backend and aiogram bot;
+- PostgreSQL as the source of truth;
+- LittleFox as external digital-goods fulfillment;
+- customer preferences, notifications and referrals owned by KEYDROP.
+
+The frontend lives in this repository under `frontend/`.
+
+## Current repository state
 
 - **Default branch:** `main`
-- **Latest merged work:** PR #36 added `/top`; merge commit [f4ee96d](https://github.com/iprotx/Telegram-activb/commit/f4ee96db00e973af56196a202287d2df5268a243).
-- **Current product shape:** aiogram bot with user registration, per-chat activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Latest product feature:** `/top` merged in PR #36 ([merge commit](https://github.com/iprotx/Telegram-activb/commit/f4ee96db00e973af56196a202287d2df5268a243)); CI run [#242](https://github.com/iprotx/Telegram-activb/actions/runs/40894363840) passed all configured checks.
+- **Current foundation:** aiogram 3.31, SQLAlchemy 2.x async, Alembic, PostgreSQL/SQLite development support, Docker Compose and CI quality gates.
+- **Existing bot features:** registration/profile synchronization, group activity/XP, `/rank`, `/top`, and group-join welcome behavior.
+- **Mini App:** Stage 1 foundation is implemented in PR #38; it is not merged into `main` yet.
+- **Backend API:** Stage 2 authentication and Stage 3 catalog foundations are implemented in PR #38; CI verification is pending.
+- **Telegram auth:** server-side `initData` validation and authenticated `/api/v1/me` are implemented.
+- **Catalog:** products migration, LittleFox catalog client, authenticated product endpoints and frontend product cards are implemented.
 
-## Architecture and constraints
+## Architecture decisions
 
-- Preserve `handlers → services → repositories → database infrastructure`.
-- Keep activity/XP policy in services and persistence in repositories.
-- Preserve update-level atomicity for registration + activity unless a tested transaction API replaces it.
-- Keep product behavior deterministic; no AI/LLM/model calls or external AI services.
-- Do not add infrastructure without measured need.
+- Keep one repository for MVP.
+- Keep the existing backend dependency direction: `handlers -> services -> repositories -> database infrastructure`.
+- Add the HTTP API as a transport boundary; do not move business logic into React.
+- React must never access PostgreSQL or LittleFox directly.
+- Telegram Mini App identity is validated server-side.
+- LittleFox credentials remain server-side.
+- Purchase operations are idempotent and recoverable.
+- KEYDROP owns the customer relationship; LittleFox is a fulfillment provider.
+- MVP prioritizes transaction integrity and repeatable customer journeys over gamification.
 
-## Reliability and verification
+## MVP roadmap
 
-- **Registration concurrency and nullable profile fields:** unit and PostgreSQL integration coverage.
-- **Activity policy dependency direction:** corrected in PR #21.
-- **Configuration/Alembic URL:** PR #24 and PR #33; `BOT_TOKEN` remains required by the app while Alembic can load DB settings independently.
-- **Safe error logging:** PR #28.
-- **Startup/import safety:** PR #29.
-- **Docker runtime smoke and migration validation:** PR #30.
-- **Transaction boundaries:** PR #34 documented why the existing update-level transaction is retained; issue #32 investigation completed.
-- **Rank command:** merged in PR #35; CI run #215 passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
-- **Top command:** merged in PR #36; CI run [#242](https://github.com/iprotx/Telegram-activb/actions/runs/40894363840) passed Ruff format/lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic check, dependency audit, Docker build and runtime smoke.
+See `docs/MVP_PLAN.md` for the detailed staged plan.
 
-## Current backlog
+1. Documentation/architecture foundation — **implemented in PR #38; not merged**
+2. React/Vite Mini App foundation — **implemented in PR #38; CI verification pending**
+3. Python API + Telegram auth + catalog — **implemented in PR #38; CI verification pending**
+4. Catalog/customer UX, favorites and cart — **in progress / next**
+5. Checkout/LittleFox fulfillment — **not started**
+6. Orders/notifications — **not started**
+7. Referral foundation — **not started**
+8. MVP hardening + test deployment — **not started**
 
-- [ ] **Welcome message:** verify CI and review PR for automatic group-join greetings.
-- [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
+## MVP gate
 
-## Evidence rules
+MVP is ready only when the critical Telegram purchase flow is working in a deployed test environment and the acceptance checklist in `docs/MVP_PLAN.md` has evidence.
 
-1. A task is **Done** only with concrete evidence: tests, CI, a merged commit, or an explicit architectural decision.
-2. CI green means configured checks passed; it does not by itself prove production readiness.
-3. Merge and deployment remain explicit human decisions.
-4. Keep this page concise and reconcile it after meaningful work.
+At that point the project report must explicitly say **MVP READY — можно тестировать** and provide the test entry point, verified scenarios and known limitations.
 
-## Links
+## Out of MVP scope
 
-- [Engineering rules](../AGENTS.md)
-- [Architecture cleanup plan](superpowers/plans/2026-10-29-architecture-cleanup.md)
-- [Feature research plan](superpowers/plans/2026-10-29-chat-bot-feature-research.md)
-- [Decision log](DECISIONS.md)
-- [Worklog](WORKLOG.md)
+Full loyalty economy, KEYDROP CLUB, quests, achievements, advanced segmentation/campaign UI, recommendations, multi-provider fulfillment, public SEO site and AI features remain post-MVP unless explicitly promoted into scope.
+
+## Reliability rules
+
+- Done requires evidence from tests, CI, a merged commit, deployment verification or an explicit architectural decision.
+- CI green does not by itself prove product readiness.
+- Merge and deployment remain explicit human decisions.
+- Keep production secrets out of the repository and logs.
+
+## Documentation map
+
+- `docs/ARCHITECTURE.md` — target system boundaries and responsibilities.
+- `docs/API.md` — Mini App ↔ Python API contract.
+- `docs/INTEGRATIONS.md` — external integration boundaries.
+- `docs/integrations/littlefox.md` — LittleFox adapter and purchase rules.
+- `docs/MVP_PLAN.md` — staged delivery plan and MVP READY gate.
+- `docs/DECISIONS.md` — durable architecture/product decisions.
+- `docs/WORKLOG.md` — chronological execution evidence.

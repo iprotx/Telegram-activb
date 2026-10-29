@@ -70,3 +70,22 @@ jobs:
           test "$status" -ne 0
           printf '%s\n' "$output" | grep -Eiq 'token|bot|validation|invalid'
           ! printf '%s\n' "$output" | grep -Eiq 'timed out|connection refused|network is unreachable'
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Install
+        run: npm install
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
