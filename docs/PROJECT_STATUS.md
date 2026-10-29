@@ -8,7 +8,7 @@ _Last reconciled: 2026-10-29_
 - **Current main HEAD:** `fe25dba738f8201646772f6f8409c9d77c088705` — merge of PR #31.
 - **Latest merged work:** PR #30 adds Docker runtime smoke coverage; PR #31 records the minimal architecture-cleanup plan. PR #31 itself did not change application code.
 - **Current product shape:** production-oriented aiogram bot foundation with user registration, activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Current engineering task:** `refactor/config-settings-boundary` separates database configuration from the required Telegram bot token while preserving validation and environment precedence.
+- **Current engineering task:** [PR #33](https://github.com/iprotx/Telegram-activb/pull/33) separates database configuration from the required Telegram bot token; CI run [40888401905](https://github.com/iprotx/Telegram-activb/actions/runs/40888401905) passed all configured checks.
 
 ## Architecture and constraints
 
@@ -27,12 +27,12 @@ _Last reconciled: 2026-10-29_
 - **Safe error logging:** PR #28.
 - **Startup/import safety:** PR #29.
 - **Docker runtime smoke and migration validation:** PR #30; CI runs formatting, lint, mypy, migrations, unit tests, PostgreSQL integration tests, Alembic drift check, dependency audit, Docker build, and runtime smoke.
-- **Architecture cleanup:** PR #31 added the plan only. The current branch makes a narrowly scoped configuration refactor; runtime transaction boundaries and activity semantics remain unchanged.
+- **Architecture cleanup:** PR #31 added the plan only. PR #33 makes a narrowly scoped configuration refactor; runtime transaction boundaries and activity semantics remain unchanged. CI run #195 passed every configured step.
 
 ## Current backlog
 
 - [ ] **#32 — Transaction boundary investigation.** Determine whether any transaction scope change is warranted; retain current behavior unless evidence justifies a change.
-- [ ] **Configuration refactor CI/review.** Verify the current branch with all configured quality gates before considering it ready.
+- [ ] **PR #33 review.** CI is green; review and merge remain explicit steps.
 - [ ] **Product scope.** The research plan lists deterministic candidates such as `/rank` and `/top`; these remain separate from architecture cleanup.
 
 ## Evidence rules
