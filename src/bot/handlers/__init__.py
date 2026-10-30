@@ -8,9 +8,9 @@ from bot.handlers.welcome import router as welcome_router
 
 router = Router(name="handlers")
 router.include_router(start_router)
-router.include_router(activity_router)
 router.include_router(rank_router)
 router.include_router(top_router)
+router.include_router(activity_router)
 router.include_router(welcome_router)
 
 __all__ = ["router"]

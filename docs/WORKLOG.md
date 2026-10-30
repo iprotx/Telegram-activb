@@ -1,5 +1,15 @@
 # Work Log
 
+## 2026-10-30 — Group command routing hotfix
+
+- **Incident:** the running pre-fix Docker image registered the group activity fallback before `/rank` and `/top`, so commands were recorded as activity and completed without a reply.
+- **Changed:** command routers now precede the activity fallback, and slash-prefixed text/captions are excluded from activity tracking. No schema, XP policy, transaction, dependency, or response-copy behavior changed.
+- **Tests:** added an isolated `Dispatcher.feed_raw_update` matrix for plain/addressed commands, commands for another bot, unknown text/caption commands, ordinary text, and non-text messages.
+- **TDD evidence:** the test failed with 7 failures and 2 passes on `origin/main`; after the minimal fix it passed all 9 cases.
+- **Verification:** routing matrix `9 passed`; focused neighboring suite `27 passed`; full suite `65 passed, 4 skipped`; Ruff format/lint and mypy passed.
+- **Operational state:** the running container still uses `main@d74820e`; rebuild and live verification in the target test group require explicit approval after review and token rotation.
+- **Next:** complete review and CI, then request merge/deployment approval.
+
 ## 2026-10-29 — Welcome message for new group members
 
 - **Goal:** greet a user when they newly join a group or supergroup.

@@ -9,7 +9,10 @@ from bot.services.users import UserService
 router = Router(name="activity")
 
 
-@router.message(F.chat.type.in_({"group", "supergroup"}))
+@router.message(
+    F.chat.type.in_({"group", "supergroup"}),
+    ~(F.text.startswith("/") | F.caption.startswith("/")),
+)
 async def activity_message_handler(
     message: Message,
     user_service: UserService,
