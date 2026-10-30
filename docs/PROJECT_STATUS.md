@@ -1,13 +1,13 @@
 # Project Status
 
-_Last reconciled: 2026-10-29_
+_Last reconciled: 2026-10-30_
 
 ## Current snapshot
 
 - **Default branch:** `main`
-- **Latest merged work:** PR #36 added `/top`; merge commit [f4ee96d](https://github.com/iprotx/Telegram-activb/commit/f4ee96db00e973af56196a202287d2df5268a243).
-- **Current product shape:** aiogram bot with user registration, per-chat activity/XP tracking, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
-- **Latest product feature:** `/top` merged in PR #36 ([merge commit](https://github.com/iprotx/Telegram-activb/commit/f4ee96db00e973af56196a202287d2df5268a243)); CI run [#242](https://github.com/iprotx/Telegram-activb/actions/runs/40894363840) passed all configured checks.
+- **Latest merged work:** PR #37 added group-join welcomes; merge commit [d74820e](https://github.com/iprotx/Telegram-activb/commit/d74820edfdd950fb4a0bb9253fb251ebe7070c25).
+- **Current product shape:** aiogram bot with user registration, per-chat activity/XP tracking, `/rank`, `/top`, group-join welcomes, SQLAlchemy persistence, Alembic migrations, Docker Compose, and CI quality gates.
+- **Current branch work:** `hotfix/group-command-routing` prevents the activity fallback from preempting group commands; local Ruff, mypy, and pytest gates pass, while CI, merge, rebuild, and live Telegram verification are pending.
 
 ## Architecture and constraints
 
@@ -19,6 +19,7 @@ _Last reconciled: 2026-10-29_
 
 ## Reliability and verification
 
+- **Command routing:** a real aiogram dispatch test reproduced `/rank` and `/top` being recorded as activity with no response; the hotfix registers command routers first and excludes slash commands from activity.
 - **Registration concurrency and nullable profile fields:** unit and PostgreSQL integration coverage.
 - **Activity policy dependency direction:** corrected in PR #21.
 - **Configuration/Alembic URL:** PR #24 and PR #33; `BOT_TOKEN` remains required by the app while Alembic can load DB settings independently.
@@ -31,7 +32,7 @@ _Last reconciled: 2026-10-29_
 
 ## Current backlog
 
-- [ ] **Welcome message:** verify CI and review PR for automatic group-join greetings.
+- [ ] **Group command hotfix:** complete review and CI, merge, rebuild the bot image, and verify addressed commands in the test group without awarding activity.
 - [ ] **Operational evidence:** if transaction duration or lock contention becomes a measured issue, revisit the decision in `docs/DECISIONS.md`.
 
 ## Evidence rules
